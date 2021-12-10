@@ -16,7 +16,6 @@ Options:
 
   --stage=<stage>          Use specific stage: [$(list_stages)] (It requires a target to work)
   --git=<git_folder>       Git folder to be mounted (Default: $HOME/git)
-  --catkin=<ws_folder>     Catkin workspace folder to be mounted (Default: $HOME/catkin_ws)
   --entrypoint=<file>      Custom entrypoint script to be executed when running the container
   --flags=<docker_flags>   Any extra flags passed do docker run (e.g, to mount additional stuff)
 
@@ -29,7 +28,6 @@ TARGET=""
 IMAGE_ID=""
 STAGE=""
 GIT_DIR="$HOME/git"
-CATKIN_DIR="$HOME/catkin_ws"
 ENTRYPOINT_FILE="dummy.sh"
 EXTRA_FLAGS=""
 REMOVE_FLAG="--rm"
@@ -52,10 +50,6 @@ for i in "$@"; do
             ;;
         --git=*|--git-dir=*)
             GIT_DIR=${i#*=}
-            shift
-            ;;
-        --catkin=*|--catkin-dir=*)
-            CATKIN_DIR=${i#*=}
             shift
             ;;
         --entrypoint=*)
@@ -92,7 +86,6 @@ echo " Target:          '$TARGET'"
 echo " Stage:           '$STAGE'"
 echo " Images:          '$IMAGE_ID'"
 echo " Mount git:       '$GIT_DIR'"
-echo " Mount catkin:    '$CATKIN_DIR'"
 echo " Entrypoint file: '$ENTRYPOINT_FILEPATH'"
 echo " ============"
 
@@ -175,7 +168,6 @@ docker run  --net=host \
             --env="XAUTHORITY=/root/.docker.xauth" \
             --env="DISPLAY=$DISPLAY" \
             -v ${GIT_DIR}:/root/git \
-            -v ${CATKIN_DIR}:/root/catkin_ws \
             -v "${ENTRYPOINT_FILEPATH}":/custom_entrypoint.sh \
             --pull "missing" \
             $EMULATOR_FLAGS \

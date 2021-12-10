@@ -17,7 +17,6 @@ Options:
 
   --stage=<stage>          Use specific stage: [$(list_stages)] (It requires a target to work)
   --git=<git_folder>       Git folder to be mounted (Default: $HOME/git)
-  --catkin=<ws_folder>     Catkin workspace folder to be mounted (Default: $HOME/catkin_ws)
   --entrypoint=<file>      Custom entrypoint script to be executed when running the container
   --flags=<docker_flags>   Any extra flags passed do docker run (e.g, to mount additional stuff)
 "
@@ -28,7 +27,6 @@ TARGET=none
 IMAGE_ID=none
 STAGE=""
 GIT_DIR="$HOME/git"
-CATKIN_DIR="$HOME/catkin_ws"
 ENTRYPOINT_FILE="dummy.sh"
 EXTRA_FLAGS=""
 UNINSTALL_FLAG=""
@@ -54,10 +52,6 @@ for i in "$@"; do
             ;;
         --git=*|--git-dir=*)
             GIT_DIR=${i#*=}
-            shift
-            ;;
-        --catkin=*|--catkin-dir=*)
-            CATKIN_DIR=${i#*=}
             shift
             ;;
         --entrypoint=*)
@@ -108,7 +102,6 @@ if [[ ${UNINSTALL_FLAG} != "true" ]]; then
                             --image=$IMAGE \
                             --stage=$STAGE \
                             --git=$GIT_DIR \
-                            --catkin=$CATKIN_DIR \
                             --entrypoint=$ENTRYPOINT_FILE \
                             --no-rm \
                             --flags="--name=${DOCKER_SETUP_CONTAINER_NAME} -d" > /dev/null

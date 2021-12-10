@@ -7,7 +7,7 @@ export force_color_prompt=yes
 source /root/.bash_aliases
 
 # Sourcing catkin
-echo "source /root/catkin_ws/devel/setup.bash" >> /root/.bashrc
+grep -qxF 'source /root/catkin_ws/devel/setup.bash' /root/.bashrc || echo 'source /root/catkin_ws/devel/setup.bash' >> /root/.bashrc
 
 # Source custom entrypoint
 source /custom_entrypoint.sh

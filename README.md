@@ -59,7 +59,7 @@ Options:
 To run a container from an image we built, we instead use the `run.sh` script. For example:
 
 ```sh
-./bin/run.sh --target=cpu --git=$HOME/git --catkin=$HOME/catkin_ws
+./bin/run.sh --target=cpu --git=$HOME/git
 ```
 
 All the options are:
@@ -70,13 +70,106 @@ Options:
   --target=<target>        Selected target (available ones): [cpu gpu jetson_xavier]
   --image=<image>          Tag or image id (if not using a specific target)
   --git=<git_folder>       Git folder to be mounted (Default: /home/matias/git)
-  --catkin=<ws_folder>     Catkin workspace folder to be mounted (Default: /home/matias/catkin_ws)
 ```
 
 
 ### Pushing images to the cloud
 
 To be completed
+
+
+## Explanation
+
+## Preperation pre-installation: 
+1. In the following we will install the jetson xavier docker image on the robot cerberus.
+2. We need to define the entrypoint of the container under `entrypoints/jetson_xavier_cerberus.sh`:
+This entrypoint should source the `.bashrc`, `catkin_ws` and automaticially start a `procman debuty` with the correct name.   
+As a template you can use the `entrypoints/jetson_xavier_coyote.sh`
+Sidenote: The started debuty and container should not take up any resources therefore can be simply ignored when not using the container installation.
+
+## Installation of the container:
+You execute:
+```
+./bin/install.sh --name=jetson_xavier_cerberus --target=jetson_xavier.sh --git=$HOME/git --entrypoint=jetson_xavier_cerberus.sh
+```
+1. The correct docker image is pulled/build.
+2. A background service is added under: `/etc/systemd/system/docker-setup-jetson_xavier_cerberus.service`
+The service is starts automaticially on startup the same container and executes what is defined within the entrypoint. 
+3. Within the install script the `bin/run.sh` script is called.
+4. You should now when executing `docker ps` see a running container with the name `jetson_xavier_cerberus`
+
+
+## Setting up your catkin_ws:
+1. You can now use `dsbash` to contain a bash shell inside the container. 
+2. The git folder is mapped inside the container. You should pull the packages outside of the container given that no ssh keys are mapped inside.
+3. Create the typicial catkin_ws/ws and set it up as usually:
+```
+mkdir -p ~/catkin_ws/src/
+source /opt/ros/noetic/setup.bash
+cd ~/catkin_ws/
+catkin init
+catkin config --extend /opt/ros/noetic
+catkin config --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo
+ln -s /root/git/anymal_rsl /root/caktin_ws/src
+ln -s /root/git/catkin_simple /root/caktin_ws/src
+ln -s /root/git/elevation_mapping_cupy /root/caktin_ws/src
+ln -s /root/git/glog_catkin /root/caktin_ws/src
+ln -s /root/git/procman_ros /root/caktin_ws/src
+ln -s /root/git/pybind11_catkin /root/caktin_ws/src
+ln -s /root/git/raw_image_pipeline /root/caktin_ws/src
+cd $HOME/catkin_ws
+catkin build
+```
+4. Having the catkin_ws not mapped inside the container avoid permission issues between the host user and container defined user. 
+5. Now log out of the container using `exit` and restart the container `docker restart jetson_xavier_cerberus` - This will restart the container and ensure that procman is loaded with the correct packages available within the catkin_ws.
+
+## Now we are ready to run the your code
+### Classicial way:
+1. Ssh into the jetson
+```
+ssh anymal-cerberus-jetson
+```
+2. Start a tmux session
+```
+tmux
+```
+3. Execute dsbash
+```
+dsbash
+```
+4. Execute the anymal_rsl code inside the container
+```
+rosrun anymal_rsl jetson.py
+```
+5. Done
+
+### Procman: 
+1. Define on OPC a procman configuration `~/procman.pmd` containing the following:
+```
+group "0.basic" {
+    cmd "0.5.jetson MAN" {
+        exec = "rosrun anymal_c_rsl jetson.py";
+        host = "anymal_cerberus_xavier";
+    }
+}
+```
+I also like to add to the bashrc to easily open procman:
+```
+alias procman="rosrun procman_ros sheriff -l $HOME/procman.pmd"
+```
+Start procman (dont forget to source your `.bashrc`)
+```
+procman
+```
+
+
+## Changing the content of the catkin_ws
+Make when chaning things inside the catkin_ws and you want to start them via the procman to restart the container such that procman is restarted and the catkin_ws newly sourced. 
+
+Warning stuff breaks if procman is not build>
+print warning if procman is not build
+otherwise execute procman
+
 
 ## Troubleshooting
 Just writing down some annoying problems I found and how to fix them
