@@ -1,5 +1,5 @@
 # docker_setup
-Personal docker setup with all the tools and packages I use
+Personal docker setup with all the tools and packages I use: ROS, OpenCV with CUDA support, PyTorch
 
 ## General overview
 
