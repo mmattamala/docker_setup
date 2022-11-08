@@ -9,13 +9,13 @@ TARGET=none
 # Read arguments
 for i in "$@"
 do
-case $i in
-  -t=*|--target=*)
-    TARGET=${i#*=}
-    echo "[build.sh]: User-set target type is: '$TARGET'"
-    shift
-    ;;
-esac
+    case $i in
+        -t=*|--target=*)
+          TARGET=${i#*=}
+          echo "[build.sh]: User-set target type is: '$TARGET'"
+          shift
+          ;;
+    esac
 done
 
 

@@ -12,21 +12,21 @@ CATKIN_DIR="$HOME/catkin_ws"
 for i in "$@"
 do
 case $i in
-  -t=*|--target=*)
-    TARGET=${i#*=}
-    echo "[run.sh]: User-set target type is: '$TARGET'"
-    shift
-    ;;
-  -g=*|--git-dir=*)
-    GIT_DIR=${i#*=}
-    echo "[run.sh]: User-set GIT_DIR is: '$GIT_DIR'"
-    shift
-    ;;
-  -c=*|--catkin-dir=*)
-    CATKIN_DIR=${i#*=}
-    echo "[run.sh]: User-set CATKIN_DIR is: '$CATKIN_DIR'"
-    shift
-    ;;
+    -t=*|--target=*)
+        TARGET=${i#*=}
+        echo "[run.sh]: User-set target type is: '$TARGET'"
+        shift
+        ;;
+    -g=*|--git-dir=*)
+        GIT_DIR=${i#*=}
+        echo "[run.sh]: User-set GIT_DIR is: '$GIT_DIR'"
+        shift
+        ;;
+    -c=*|--catkin-dir=*)
+        CATKIN_DIR=${i#*=}
+        echo "[run.sh]: User-set CATKIN_DIR is: '$CATKIN_DIR'"
+        shift
+        ;;
 esac
 done
 

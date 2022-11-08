@@ -17,7 +17,7 @@ ROS_VERSION="noetic"
 
 # CUDA stuff (not required for this target)
 WITH_CUDA="true"
-CUDA_VERSION="11.8.0"
+CUDA_VERSION="11.6.0"
 CUDA_ARCH_BIN="6.1" # For Quadro P2000, check https://developer.nvidia.com/cuda-gpus
 
 # These variables go in the end since they rely on the previous

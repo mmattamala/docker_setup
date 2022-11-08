@@ -4,19 +4,19 @@ set -e
 # Read arguments
 for i in "$@"
 do
-case $i in
-  -t=*|--ros-version=*)
-    ROS_VERSION=${i#*=}
-    shift
-    ;;
-  --cuda=*)
-    CUDA=${i#*=}
-    shift
-    ;;
-  --cuda-arch-bin=*)
-    CUDA_ARCH_BIN=${i#*=}
-    shift
-    ;;
+    case $i in
+        -t=*|--ros-version=*)
+            ROS_VERSION=${i#*=}
+            shift
+            ;;
+        --cuda=*)
+            CUDA=${i#*=}
+            shift
+            ;;
+        --cuda-arch-bin=*)
+            CUDA_ARCH_BIN=${i#*=}
+            shift
+            ;;
 esac
 done
 
@@ -95,7 +95,7 @@ if [[ "$CUDA" == "true" ]]; then
         -D BUILD_opencv_nonfree=ON \
         -D BUILD_opencv_xphoto=ON \
         ../
-    
+
     cd /opencv/build && echo $PWD && make -j$(nproc)
     echo $PWD
     make install

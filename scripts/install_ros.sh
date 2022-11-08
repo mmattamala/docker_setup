@@ -5,10 +5,10 @@ set -e
 for i in "$@"
 do
 case $i in
-  -t=*|--version=*)
-    ROS_VERSION=${i#*=}
-    shift
-    ;;
+    -t=*|--version=*)
+      ROS_VERSION=${i#*=}
+      shift
+      ;;
 esac
 done
 

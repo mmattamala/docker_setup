@@ -4,10 +4,18 @@ set -e
 echo "Installing ML packages"
 
 # PyTorch
-pip3 install --no-cache-dir \
-      torch \
-      torchvision \
-      torchaudio
+if [[ "$CUDA" == "11.6.0" ]]; then
+    pip3 install --no-cache-dir \
+        torch \
+        torchvision \
+        torchaudio \
+        --extra-index-url https://download.pytorch.org/whl/cu116
+else
+    pip3 install --no-cache-dir \
+        torch \
+        torchvision \
+        torchaudio
+fi
 
 # Other libraries
 pip3 install --no-cache-dir \
