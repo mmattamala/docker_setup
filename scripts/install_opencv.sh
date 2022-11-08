@@ -9,11 +9,11 @@ case $i in
     ROS_VERSION=${i#*=}
     shift
     ;;
-  -t=*|--cuda=*)
+  --cuda=*)
     CUDA=${i#*=}
     shift
     ;;
-  -t=*|--cuda-arch-bin=*)
+  --cuda-arch-bin=*)
     CUDA_ARCH_BIN=${i#*=}
     shift
     ;;
@@ -27,9 +27,12 @@ apt-get update
 apt-get install -y --no-install-recommends \
         libopencv-dev=4.2.0+dfsg-5 \
         python3-opencv
-# Remove cache
-rm -rf /var/lib/apt/lists/*
 
+# Remove cache
+# rm -rf /var/lib/apt/lists/*
+# apt-get clean
+
+# Handle OpenCV cases
 if [[ "$CUDA" == "true" ]]; then
     echo "Building OpenCV compatible with ROS $ROS_VERSION"
 
@@ -101,7 +104,7 @@ if [[ "$CUDA" == "true" ]]; then
     echo $PWD
 
     # Remove OpenCv folder
-    rm -rf opencv && rm -rf opencv_contrib
+    # rm -rf opencv && rm -rf opencv_contrib
 
 else
     echo "No CUDA required, skipping"

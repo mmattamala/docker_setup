@@ -72,9 +72,16 @@ apt install -y \
   python3-vtk7 \
   libopenblas-dev \
   liblapack-dev \
+  libopenmpi-dev \
+  openmpi-bin \
+  openmpi-common \
+  gfortran \
+  libomp-dev
+
 
 # Remove apt repos
 rm -rf /var/lib/apt/lists/*
+apt-get clean
 
 # Enable mouse for tmux
 echo """# Make mouse useful in copy mode \

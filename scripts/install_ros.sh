@@ -41,6 +41,7 @@ rosdep update
 
 # Remove apt repos
 rm -rf /var/lib/apt/lists/*
+apt-get clean
 
 # Add to .bashrc
 echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc

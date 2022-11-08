@@ -60,6 +60,16 @@ RUN chmod +x /home/install_ml.sh
 RUN /home/install_ml.sh && rm /home/install_ml.sh
 
 # ==
+# Remove cache and extra files
+# ==
+RUN rm -rf /var/lib/apt/lists/* && apt-get clean
+
+# ==
+# Copy helper scripts (.bashrc)
+COPY .bash_aliases /root/.bash_aliases.sh
+
+
+# ==
 # Setup entrypoint
 # ==
 COPY entrypoint.sh /entrypoint.sh

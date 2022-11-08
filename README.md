@@ -1,35 +1,109 @@
 # docker_setup
 Personal docker setup with all the tools and packages I use
 
-## Docker build instructions
-### General overview
-This folder stores basic Dockerfiles and scripts to build the dependencies of the wild_visual_navigation package for (1) desktop machines and (2) Jetson platforms.
+## General overview
 
-The main difference between both are the source images. While the one for desktop/laptops rely on NVidia's images with Pytorch support `nvcr.io/nvidia/pytorch:20.06-py3`, the Jetson ones are more involved and rely on internal images prepared by RSL. Additionally, Jetson requires to build pytorch geometric (`pyg`) from scratch, so we also add Dockerfiles to build an intermediate image for this purpose only.
+* `bin`: stores all the scripts to build the images and run the containers, as well as the default settings.
+* `scripts`: helper files to install the dependencies of the images.
+* `targets`: scripts to load all the environment variables to setup different target options (cpu, gpu).
+* `Dockerfile`: the main Dockerfile that builds the images.
+* `entrypoint.sh`: the entrypoint script that is executed when the container is executed. It sources the `.bashrc` file and it can also run other stuff.
 
-### Usage
-While staying in the docker folder, you can build the images for desktop platforms (`rslethz/desktop:r34.1.1-wvn`) by using:
+## Dependencies
+This package assumes you have Docker ([link](https://docs.docker.com/engine/install/ubuntu/)) and NVidia docker ([link](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)) installed.
+
+Please also check the [Troubleshooting](#troubleshooting) section below for more common errors I had while using Docker (like enabling support for NVidia GPUs).
+
+## Using the repo
+
+### Setting up the image targets
+The targets define different configurations we can build images for, i.e, CPU or GPU-based platforms. For example, the script [`gpu.sh`](targets/gpu.sh) configures all the variables required for my laptop.
+
+If you want to create images for other GPUs or platforms, you can use [these files](/home/matias/git/docker_setup/targets) as a reference.
+
+
+### Building the images
+While staying in the `docker_setup` folder, we can build the images by setting the corresponding `target`:
 
 ```sh
-./bin/build.sh --target=desktop
+./bin/build.sh --target=cpu
 ```
 
-Similarly, for Jetson ones you must use:
-```sh
-./bin/build.sh --target=jetson
-```
-The Jetson version will generate the images `rslethz/jetpack-5:r34.1.1-ml-pyg` and `rslethz/jetpack-5:r34.1.1-wvn`, with pytorch geometric and full wild_visual_navigation dependencies respectively.
+### Running a container
 
-### Pushing images to ORI server
-For internal use at the Oxford Robotics Institute (ORI), we also provide a helper script to upload the images to the docker server. For example, after building the images you can run:
+To run a container from an image we built, we need to set the `target` corresponding to the image, as well as the directories in the host system to the `git` and `catkin_ws` folders.
 
 ```sh
-./bin/push_ori.sh --target=jetson
+./bin/run.sh --target=cpu --git-dir=$HOME/git --catkin-dir=$HOME/catkin_ws
 ```
 
-This will create new tags for the previously mentioned images:
+
+### Pushing images to the cloud
+
+To be completed
+
+## Troubleshooting
+Just writing down some annoying problems I found and how to fix them
+
+### To avoid using sudo
+Add your user to the Docker group
+
+Create the docker group if it does not exist
 ```sh
-rslethz/jetpack-5:r34.1.1-ml-pyg -> ori-ci-gateway.robots.ox.ac.uk:12002/drs/jetson:r34.1.1-ml-pyg-latest
-rslethz/jetpack-5:r34.1.1-wvn -> ori-ci-gateway.robots.ox.ac.uk:12002/drs/jetson:r34.1.1-wvn-latest
+sudo groupadd docker
+ ```
+
+Add your user to the docker group.
+```sh
+sudo usermod -aG docker $USER
 ```
-which comply with the naming used internally at ORI.
+
+### Enable the nvidia runtime
+
+Stop the Docker daemon:
+
+```sh
+sudo service docker stop
+```
+
+Open the docker daemon file
+```sh
+sudo nano /etc/docker/daemon.json
+```
+
+Add the `default-runtime` entry to the `daemon.json` file and save:
+
+```json
+{
+    "runtimes": {
+        "nvidia": {
+            "path": "nvidia-container-runtime",
+            "runtimeArgs": []
+        }
+    },
+    "default-runtime": "nvidia"
+}
+```
+
+Start the daemon again
+```sh
+sudo service docker restart
+```
+
+### Change default directory for docker images
+The images are stored in `/var/lib/docker` by default. To change it, modify the same `daemon.json` file to add the `data-root` entry:
+
+```json
+{
+    "data-root": "/media/drs-orin/orin_ssd/docker",
+    "runtimes": {
+        "nvidia": {
+            "path": "nvidia-container-runtime",
+            "runtimeArgs": []
+        }
+    },
+    "default-runtime": "nvidia"
+}
+```
+
+If you need more information when doing this on a Jetson, check this [link](https://forums.developer.nvidia.com/t/change-docker-image-storage-location-to-nvme-ssd/156882/2) from the NVidia forums.

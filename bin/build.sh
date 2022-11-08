@@ -1,8 +1,7 @@
 #!/bin/bash
-set -e
+# This file builds docker images given a target
 
-# Source variables
-source image_setup.sh
+set -e
 
 # Default target
 TARGET=none
@@ -19,26 +18,34 @@ case $i in
 esac
 done
 
+
 # Handle different target cases
-if [[ "$TARGET" == "jetson" ]]; then
-    echo "Building images for target [$TARGET]"
-    echo "Skipping"
+source targets/$TARGET.sh
 
-elif [[ "$TARGET" == "desktop" ]]; then
-    echo "Building images for target [$TARGET]"
+# Build image
+sudo docker build --build-arg BASE_IMAGE=$BASE_IMAGE \
+                  --build-arg UBUNTU_VERSION=$UBUNTU_VERSION \
+                  --build-arg ROS_VERSION=$ROS_VERSION \
+                  --build-arg WITH_CUDA=$WITH_CUDA \
+                  --build-arg CUDA_VERSION=$CUDA_VERSION \
+                  --build-arg CUDA_ARCH_BIN=$CUDA_ARCH_BIN \
+                  --network=host \
+                  -t $IMAGE_TAG -f $DOCKERFILE .
 
-		# Build docker
-    echo "Building dockerfile..."
-    sudo docker build --build-arg BASE_IMAGE=$BASE_IMAGE \
-                      --build-arg USERNAME=$USERNAME \
-                      --build-arg UBUNTU_VERSION=$UBUNTU_VERSION \
-                      --build-arg ROS_VERSION=$ROS_VERSION \
-                      --build-arg WITH_CUDA=$WITH_CUDA \
-                      --build-arg CUDA_VERSION=$CUDA_VERSION \
-                      --build-arg CUDA_ARCH_BIN=$CUDA_ARCH_BIN \
-                      --network=host \
-                      -t $IMAGE_TAG -f $DOCKERFILE .
 
-else
-    echo "Error: unsupported target [$TARGET]"
-fi
+
+# # Handle different target cases
+# if [[ "$TARGET" == "jetson" ]]; then
+#     echo "Building images for target [$TARGET]"
+#     echo "Skipping"
+
+# elif [[ "$TARGET" == "cpu" || "$TARGET" == "gpu" ]]; then
+#     echo "Building images for target [$TARGET]"
+
+# 		# Build docker
+#     echo "Building dockerfile..."
+
+
+# else
+#     echo "Error: unsupported target [$TARGET]. "
+# fi
