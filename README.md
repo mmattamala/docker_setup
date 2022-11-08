@@ -19,7 +19,7 @@ Please also check the [Troubleshooting](#troubleshooting) section below for more
 ### Setting up the image targets
 The targets define different configurations we can build images for, i.e, CPU or GPU-based platforms. For example, the script [`gpu.sh`](targets/gpu.sh) configures all the variables required for my laptop.
 
-If you want to create images for other GPUs or platforms, you can use [these files](/home/matias/git/docker_setup/targets) as a reference.
+If you want to create images for other GPUs or platforms, you can use [these files](targets) as a reference.
 
 
 ### Building the images
