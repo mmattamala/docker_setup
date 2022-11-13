@@ -5,10 +5,7 @@ set -e
 # Include helpers
 source bin/helpers.sh
 
-# Default target
-TARGET=none
-STAGE=all
-
+# Define usage
 __usage="
 Usage: $(basename $0) --target=TARGET [OPTIONS]
 
@@ -16,6 +13,10 @@ Options:
   -t, --target=<target>        Target to be built: [$(list_targets)]
   -s, --stage=<stage>          Last stage to be built: [$(list_stages)]
 "
+
+# Default target
+TARGET=none
+STAGE=all
 
 # Read arguments
 for i in "$@"
@@ -64,7 +65,7 @@ fi
 
 # Build
 for BUILD in ${BUILD_STAGES[@]}; do
-    NEW_STAGE=${IMAGE_TAG}-${BUILD}
+    NEW_STAGE=${IMAGE_TAG}-${BUILD##*-}
     echo "Building [$NEW_STAGE] from [$LAST_STAGE]"
 
     sudo docker buildx build --build-arg BASE_IMAGE=$LAST_STAGE \

@@ -23,12 +23,21 @@ apt-get install -y --no-install-recommends \
 if [[ "$WITH_CUDA" == "true" ]]; then
     echo "Building OpenCV compatible with ROS $ROS_VERSION"
 
+    # Choose OpenCV version that matches ROS
     if [[ "$ROS_VERSION" == "noetic" ]]; then
         OPENCV_VERSION="4.2.0"
     elif [[ "$ROS_VERSION" == "melodic" ]]; then
         OPENCV_VERSION="3.4.16"
     else
         echo "Error: unsupported ROS version $ROS_VERSION"
+    fi
+
+    # Change the compiler depending on the CUDA version
+    if [[ "$CUDA_VERSION" == "10.2.0" ]]; then
+        apt install g++-7 -y
+        CMAKE_C_COMPILER="/usr/bin/gcc-7"
+    else
+        CMAKE_C_COMPILER="/usr/bin/gcc"
     fi
 
     # Install OpenCV
@@ -51,6 +60,7 @@ if [[ "$WITH_CUDA" == "true" ]]; then
         -D CUDA_ARCH_BIN=${CUDA_ARCH_BIN} \
         -D CUDA_ARCH_PTX= \
         -D CUDA_FAST_MATH=ON \
+        -D CUDA_HOST_COMPILER=${CMAKE_C_COMPILER} \
         -D CUDNN_INCLUDE_DIR=/usr/include/$(uname -i)-linux-gnu \
         -D EIGEN_INCLUDE_PATH=/usr/include/eigen3 \
         -D WITH_EIGEN=ON \

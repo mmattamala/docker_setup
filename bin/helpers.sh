@@ -1,12 +1,6 @@
 #!/bin/bash
 # This defines some bash helpers
 
-array_copy() {
-    # From https://stackoverflow.com/a/70521065
-    set -- "$(declare -p $1)" "$2"
-    eval "$2=${1#*=}"
-}
-
 list_from_files_in_dir()
 {
     # ls the directory and remove the extension
