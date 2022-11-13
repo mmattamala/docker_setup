@@ -46,6 +46,7 @@ if [[ "$WITH_CUDA" != "" ]]; then
     #                python3.8-vpi2
     # # Install TensorRT
     # apt install -y tensorrt \
+    #                python3-libnvfer \
     # 	             python3-libnvinfer-dev
 
 
