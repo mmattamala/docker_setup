@@ -1,24 +1,11 @@
 #!/bin/bash
 set -e
-
-# Read arguments
-for i in "$@"
-do
-    case $i in
-        -t=*|--ros-version=*)
-            ROS_VERSION=${i#*=}
-            shift
-            ;;
-        --cuda=*)
-            CUDA=${i#*=}
-            shift
-            ;;
-        --cuda-arch-bin=*)
-            CUDA_ARCH_BIN=${i#*=}
-            shift
-            ;;
-esac
-done
+echo "Installing OpenCV..."
+echo "  WITH_CUDA:       $WITH_CUDA"
+echo "  CUDA_VERSION:    $CUDA_VERSION"
+echo "  CUDA_ARCH_BIN:   $CUDA_ARCH_BIN"
+echo "  JETPACK_VERSION: $JETPACK_VERSION"
+echo "  ROS_VERSION:     $ROS_VERSION"
 
 #
 # Install OpenCV
@@ -33,7 +20,7 @@ apt-get install -y --no-install-recommends \
 # apt-get clean
 
 # Handle OpenCV cases
-if [[ "$CUDA" == "true" ]]; then
+if [[ "$WITH_CUDA" == "true" ]]; then
     echo "Building OpenCV compatible with ROS $ROS_VERSION"
 
     if [[ "$ROS_VERSION" == "noetic" ]]; then
@@ -45,10 +32,10 @@ if [[ "$CUDA" == "true" ]]; then
     fi
 
     # Install OpenCV
-    echo $PWD
-    git clone --depth 1 --branch ${OPENCV_VERSION} https://github.com/opencv/opencv.git && \
-    git clone --depth 1 --branch ${OPENCV_VERSION} https://github.com/opencv/opencv_contrib.git && \
-    mkdir /opencv/build
+    cd /
+    git clone --depth 1 --branch ${OPENCV_VERSION} https://github.com/opencv/opencv.git
+    git clone --depth 1 --branch ${OPENCV_VERSION} https://github.com/opencv/opencv_contrib.git
+    mkdir -p /opencv/build
     cd /opencv/build
     echo $PWD
     echo "Configuring OpenCV ${OPENCV_VERSION}, CUDA_ARCH_BIN=${CUDA_ARCH_BIN}"

@@ -1,6 +1,5 @@
 #!/bin/bash
 # This is a helper script to push images to DockerHub or ORI-internal registry
-
 set -e
 
 # Default target
@@ -12,7 +11,7 @@ do
     case $i in
         -t=*|--target=*)
           TARGET=${i#*=}
-          echo "[build.sh]: User-set target type is: '$TARGET'"
+          echo "[push.sh]: User-set target type is: '$TARGET'"
           shift
           ;;
     esac
@@ -20,13 +19,13 @@ done
 
 update_tags_and_push()
 {
-    local original_tag=$1
+    local old_tag=$1
     local new_tag=$2
 
     # Build pytorch geometric docker
-    echo "Making new tag $new_tag"
-    docker tag $original_tag $new_tag
-    echo "Pushing $new_tag to server..."
+    echo "Making new tag [$new_tag] from old tag [$old_tag]"
+    docker tag $old_tag $new_tag
+    echo "Pushing [$new_tag] to server..."
     docker push $new_tag
 }
 

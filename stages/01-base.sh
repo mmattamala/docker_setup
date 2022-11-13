@@ -1,4 +1,7 @@
 #!/bin/bash
+# Installation of default packages for all the targets
+set -e
+echo "Installing base packages..."
 
 # Update first
 apt update
@@ -71,17 +74,22 @@ apt install -y \
     python3-matplotlib \
     python3-vtk7 \
     libopenblas-dev \
+    libopenblas-base \
     liblapack-dev \
+    liblapacke-dev \
     libopenmpi-dev \
     openmpi-bin \
     openmpi-common \
     gfortran \
-    libomp-dev
-
+    libomp-dev \
 
 # Remove apt repos
 rm -rf /var/lib/apt/lists/*
 apt-get clean
+
+# Patch LAPACK
+sudo ln -s /usr/include/lapacke.h /usr/include/$(uname -m)-linux-gnu
+sudo ln -s /usr/include/lapack.h /usr/include/$(uname -m)-linux-gnu
 
 # Enable mouse for tmux
 echo """# Make mouse useful in copy mode \

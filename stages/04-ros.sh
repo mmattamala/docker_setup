@@ -1,5 +1,11 @@
 #!/bin/bash
 set -e
+echo "Installing OpeROS..."
+echo "  WITH_CUDA:       $WITH_CUDA"
+echo "  CUDA_VERSION:    $CUDA_VERSION"
+echo "  CUDA_ARCH_BIN:   $CUDA_ARCH_BIN"
+echo "  JETPACK_VERSION: $JETPACK_VERSION"
+echo "  ROS_VERSION:     $ROS_VERSION"
 
 # Read arguments
 for i in "$@"

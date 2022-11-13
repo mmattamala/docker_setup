@@ -10,7 +10,7 @@ Personal docker setup with all the tools and packages I use: ROS, OpenCV with CU
 * `entrypoint.sh`: the entrypoint script that is executed when the container is executed. It sources the `.bashrc` file and it can also run other stuff.
 
 ## Dependencies
-This package assumes you have Docker ([link](https://docs.docker.com/engine/install/ubuntu/)) and NVidia docker ([link](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)) installed.
+This package assumes you have Docker >20.10.10 ([link](https://docs.docker.com/engine/install/ubuntu/)) and NVidia docker ([link](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)) installed.
 
 Please also check the [Troubleshooting](#troubleshooting) section below for more common errors I had while using Docker (like enabling support for NVidia GPUs).
 

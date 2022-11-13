@@ -19,6 +19,7 @@ ROS_VERSION="noetic"
 WITH_CUDA="false"
 CUDA_VERSION=""
 CUDA_ARCH_BIN=""
+JETPACK_VERSION=""
 
 # These variables go in the end since they rely on the previous
 # Base image for docker
