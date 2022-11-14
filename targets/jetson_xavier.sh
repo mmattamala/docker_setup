@@ -1,4 +1,5 @@
 #!/bin/bash
+# author: Matias Mattamala
 
 # Target name
 TARGET_NAME="jetson"
@@ -21,7 +22,7 @@ CUDA_VERSION="10.2.0"
 CUDA_ARCH_BIN="7.2" # For Xavier, check https://developer.nvidia.com/cuda-gpus
 JETPACK_VERSION="r32.5.0"
 
-# These variables go in the end since they rely on the previous
+# These variables go in the end since they rely on the previous ones
 # Base image for docker
 BASE_IMAGE="arm64v8/ubuntu:focal"
 

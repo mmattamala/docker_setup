@@ -1,5 +1,6 @@
 #!/bin/bash
 # Installation of other libraries
+# author: Matias Mattamala
 set -e
 echo "Installing ML packages..."
 echo "  WITH_CUDA:       $WITH_CUDA"

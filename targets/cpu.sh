@@ -1,4 +1,5 @@
 #!/bin/bash
+# author: Matias Mattamala
 
 # Target name
 TARGET_NAME="cpu"
@@ -21,7 +22,7 @@ CUDA_VERSION=""
 CUDA_ARCH_BIN=""
 JETPACK_VERSION=""
 
-# These variables go in the end since they rely on the previous
+# These variables go in the end since they rely on the previous ones
 # Base image for docker
 BASE_IMAGE="ubuntu:${UBUNTU_VERSION}"
 

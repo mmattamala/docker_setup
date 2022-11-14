@@ -1,6 +1,8 @@
 # docker_setup
 Personal docker setup with all the tools and packages I use: ROS, OpenCV with CUDA support, PyTorch
 
+The avaialble images can be found in [DockerHub](https://hub.docker.com/u/mmattamala)
+
 ## General overview
 
 * `bin`: stores all the scripts to build the images and run the containers, as well as the default settings.
@@ -26,25 +28,39 @@ If you want to create images for other GPUs or platforms, you can use [these fil
 
 
 ### Building the images
-While staying in the `docker_setup` folder, we can build the images by setting the corresponding `target`:
+While staying in the `docker_setup` folder, we can build the images using the `build.sh` script. For instance, to build all the stages of the `cpu` target:
 
 ```sh
 ./bin/build.sh --target=cpu
 ```
 
-### Building a specific stage
-This is helpful to debug the building process or to rebuild and image that was updated.
-
+All the options are:
 ```sh
-./bin/build.sh --target=cpu
+Usage: build.sh --target=TARGET [OPTIONS]
+
+Options:
+  -t, --target=<target>        Target to be built: [cpu gpu jetson_xavier]
+  -s, --stage=<stage>          Last stage to be built: [01-base 02-cuda 03-opencv 04-ros 05-ml 06-extra]
+  -p, --push                   Push images to DockerHub
 ```
 
 ### Running a container
 
-To run a container from an image we built, we need to set the `target` corresponding to the image, as well as the directories in the host system to the `git` and `catkin_ws` folders.
+To run a container from an image we built, we instead use the `run.sh` script. For example:
 
 ```sh
-./bin/run.sh --target=cpu --git-dir=$HOME/git --catkin-dir=$HOME/catkin_ws
+./bin/run.sh --target=cpu --git=$HOME/git --catkin=$HOME/catkin_ws
+```
+
+All the options are:
+```sh
+Usage: run.sh --target=TARGET|--image=IMAGE [OPTIONS]
+
+Options:
+  -t, --target=<target>        Selected target (available ones): [cpu gpu jetson_xavier]
+  -i, --image=<image>          Tag or image id (if not using a specific target)
+  -g, --git=<git_folder>       Git folder to be mounted (Default: /home/matias/git)
+  -c, --catkin=<ws_folder>     Catkin workspace folder to be mounted (Default: /home/matias/catkin_ws)
 ```
 
 

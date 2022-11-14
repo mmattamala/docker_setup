@@ -1,5 +1,6 @@
 #!/bin/bash
 # This script launches a container for the target platform
+# author: Matias Mattamala
 set -e
 
 # Include helpers

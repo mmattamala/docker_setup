@@ -1,5 +1,6 @@
 #!/bin/bash
 # Installing ROS noetic
+# author: Matias Mattamala
 set -e
 echo "Installing OpeROS..."
 echo "  WITH_CUDA:       $WITH_CUDA"

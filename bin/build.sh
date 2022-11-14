@@ -1,5 +1,6 @@
 #!/bin/bash
-# This file builds docker images given a target
+# This file builds docker images
+# author: Matias Mattamala
 set -e
 
 # Include helpers

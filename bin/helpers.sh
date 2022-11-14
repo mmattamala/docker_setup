@@ -1,5 +1,6 @@
 #!/bin/bash
-# This defines some bash helpers
+# This defines some bash helpers and functions
+# author: Matias Mattamala
 
 find_substring()
 {

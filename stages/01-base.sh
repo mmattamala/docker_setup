@@ -1,5 +1,6 @@
 #!/bin/bash
 # Installation of default packages for all the targets
+# author: Matias Mattamala
 set -e
 echo "Installing base packages..."
 

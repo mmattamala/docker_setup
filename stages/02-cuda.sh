@@ -1,5 +1,6 @@
 #!/bin/bash
 # Installation of CUDA for Jetson devices
+# author: Matias Mattamala
 set -e
 echo "Installing CUDA packages..."
 echo "  WITH_CUDA:       $WITH_CUDA"

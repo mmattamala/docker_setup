@@ -1,5 +1,6 @@
 #!/bin/bash
 # Installation of ML libraries (Pytorch)
+# author: Matias Mattamala
 set -e
 echo "Installing ML packages..."
 echo "  WITH_CUDA:       $WITH_CUDA"

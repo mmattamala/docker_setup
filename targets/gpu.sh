@@ -1,4 +1,5 @@
 #!/bin/bash
+# author: Matias Mattamala
 
 # Target name
 TARGET_NAME="gpu"
@@ -21,7 +22,7 @@ CUDA_VERSION="11.6.0"
 CUDA_ARCH_BIN="6.1" # For Quadro P2000, check https://developer.nvidia.com/cuda-gpus
 JETPACK_VERSION=""
 
-# These variables go in the end since they rely on the previous
+# These variables go in the end since they rely on the previous ones
 # Base image for docker
 BASE_IMAGE="nvidia/cuda:$CUDA_VERSION-cudnn8-devel-$UBUNTU_VERSION"
 

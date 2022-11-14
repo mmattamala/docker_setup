@@ -1,5 +1,6 @@
 #!/bin/bash
 # Installation of OpenCV with CUDA support
+# author: Matias Mattamala
 set -e
 echo "Installing OpenCV..."
 echo "  WITH_CUDA:       $WITH_CUDA"
