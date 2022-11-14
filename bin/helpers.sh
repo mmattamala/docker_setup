@@ -1,6 +1,15 @@
 #!/bin/bash
 # This defines some bash helpers
 
+find_substring()
+{
+    if grep -q "$1" <<< "$2"; then
+        echo "true"
+    else
+        echo "false"
+    fi
+}
+
 list_from_files_in_dir()
 {
     # ls the directory and remove the extension
@@ -31,7 +40,7 @@ check_target_exists()
 {
     valid_targets="$(list_targets)"
     # We grep the list of target to find a substring
-    if ! grep -q "$1" <<< $valid_targets; then
+    if [[ $(find_substring "$1" $valid_targets) == "false" ]]; then
         echo "Target [$1] does not exist. Valid targets: $valid_targets"
         exit 1
     fi
@@ -41,9 +50,9 @@ check_stage_exists()
 {
     valid_stages="$(list_stages) all"
     # We grep the list of stages to find a substring
-    if ! grep -q "$1" <<< $valid_stages ; then
+    if [[ $(find_substring "$1" $valid_stages) == "false" ]]; then
         echo "Stage [$1] does not exist. Valid stages: $valid_stages"
-        # exit 1
+        exit 1
     fi
 }
 
@@ -93,4 +102,29 @@ run_docker_qemu()
     
     # Run QEMU emulation
     docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+}
+
+compare_architectures()
+{
+    # This is to ensure that the architecture of an image and the system
+    # match correctly in spite of the different names
+    # Note: This is hacky and it should be improved
+    AMD64="x86_64 amd64"
+    ARM64="aarch64 arm64"
+    ARM32="aarch32 arm32v6 arm32v7"
+    output="false"
+
+    if [[ $(find_substring $1 "$AMD64") == "true" && $(find_substring $2 "$AMD64") == "true" ]]; then
+        output="true"
+    fi
+
+    if [[ $(find_substring $1 "$ARM64") == "true" && $(find_substring $2 "$ARM64") == "true" ]]; then
+        output="true"
+    fi
+    
+    if [[ $(find_substring $1 "$ARM32") == "true" && $(find_substring $2 "$ARM32") == "true" ]]; then
+        output="true"
+    fi
+    
+    echo "$output"
 }

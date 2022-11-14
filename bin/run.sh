@@ -69,12 +69,16 @@ else
 fi
 
 # Get architecture of base image and host system
-BASE_ARCH=$(docker inspect --format '{{ .Os }}/{{ .Architecture }}' $BASE_IMAGE)
-HOST_ARCH=$(docker info --format '{{ .OSType }}/{{ .Architecture }}')
+IMAGE_OS=$(docker inspect --format '{{ .Os }})' $IMAGE_TAG)
+HOST_OS=$(docker info --format '{{ .OSType }})')
+
+IMAGE_ARCH=$(docker inspect --format '{{ .Architecture }}' $IMAGE_TAG)
+HOST_ARCH=$(docker info --format '{{ .Architecture }}')
 
 # Build with emulator if needed
 EMULATOR_FLAGS=""
-if [[ "$BASE_ARCH" != "$HOST_ARCH" ]]; then
+if [[ $(compare_architectures $IMAGE_ARCH $HOST_ARCH) == "false" ]]; then
+    echo "Architectures [$IMAGE_ARCH] [$HOST_ARCH] are not the same, running emulation..."
     run_docker_qemu
     EMULATOR_FLAGS="--security-opt seccomp=unconfined"
 fi
