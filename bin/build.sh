@@ -12,11 +12,13 @@ Usage: $(basename $0) --target=TARGET [OPTIONS]
 Options:
   -t, --target=<target>        Target to be built: [$(list_targets)]
   -s, --stage=<stage>          Last stage to be built: [$(list_stages)]
+  -p, --push                   Push images to DockerHub
 "
 
 # Default target
 TARGET=none
 STAGE=all
+PUSH_IMAGES="false"
 
 # Read arguments
 for i in "$@"
@@ -24,12 +26,17 @@ do
     case $i in
         -t=*|--target=*)
             TARGET=${i#*=}
-            echo "[build.sh]: User-set target type is: '$TARGET'"
+            echo "[build.sh]: Building target: '$TARGET'"
             shift
             ;;
         -s=*|--stage=*)
             STAGE=${i#*=}
-            echo "[build.sh]: User-set stage type is: '$STAGE'"
+            echo "[build.sh]: Selected stages: '$STAGE'"
+            shift
+            ;;
+        -p|--push)
+            PUSH_IMAGES="true"
+            echo "[build.sh]: Push images after each build: '$PUSH_IMAGES'"
             shift
             ;;
         *)
@@ -89,13 +96,25 @@ for BUILD in ${BUILD_STAGES[@]}; do
                          --platform ${BASE_ARCH} \
                          -t ${NEW_STAGE} -f $DOCKERFILE .
     
+    # Push images if requested
+    if [[ "$PUSH_IMAGES" == "true" ]]; then
+        docker push ${NEW_STAGE}
+    fi
+
     # Update last build
     LAST_STAGE=$NEW_STAGE
 done
 
-# Make final tag for last image
-docker tag "${LAST_STAGE}" "${IMAGE_TAG}"
+# If building all the stages, create final tag
+if [[ "$STAGE" == "all" ]]; then
+    # Make final tag for last image
+    docker tag "${LAST_STAGE}" "${IMAGE_TAG}"
 
+    # Push if requested
+    if [[ "$PUSH_IMAGES" == "true" ]]; then
+        docker push ${IMAGE_TAG}
+    fi
+fi
 
 # BUILD_STAGES=(base cuda opencv ros ml)
 # # Start building

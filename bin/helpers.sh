@@ -39,7 +39,6 @@ list_targets()
 check_target_exists()
 {
     valid_targets="$(list_targets)"
-    echo "$valid_targets"
     # We grep the list of target to find a substring
     if [[ $(find_substring "$1" "$valid_targets") == "false" ]]; then
         echo "Target [$1] does not exist. Valid targets: $valid_targets"

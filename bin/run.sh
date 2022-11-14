@@ -29,22 +29,22 @@ for i in "$@"; do
     case $i in
         -t=*|--target=*)
             TARGET=${i#*=}
-            echo "[run.sh]: User-set target type is: '$TARGET'"
+            echo "[run.sh]: Running target: '$TARGET'"
             shift
             ;;
         -i=*|--image=*|--image-id=*)
             IMAGE_ID=${i#*=}
-            echo "[run.sh]: User-set IMAGE_ID is: '$IMAGE_ID'"
+            echo "[run.sh]: Running image: '$IMAGE_ID'"
             shift
             ;;
         -g=*|--git=*|--git-dir=*)
             GIT_DIR=${i#*=}
-            echo "[run.sh]: User-set GIT_DIR is: '$GIT_DIR'"
+            echo "[run.sh]: Git folder to mount: '$GIT_DIR'"
             shift
             ;;
         -c=*|--catkin=*|--catkin-dir=*)
             CATKIN_DIR=${i#*=}
-            echo "[run.sh]: User-set CATKIN_DIR is: '$CATKIN_DIR'"
+            echo "[run.sh]: Catkin folder to mount: '$CATKIN_DIR'"
             shift
             ;;
         *)
