@@ -61,7 +61,15 @@ if [[ $STAGE == "all" ]]; then
 else
     BUILD_STAGES=$STAGE
     PREVIOUS_STAGE=$(find_previous_stage $STAGE)
-    LAST_STAGE=${IMAGE_TAG}-${PREVIOUS_STAGE##*-}
+
+    echo "$PREVIOUS_STAGE"
+
+    if [[ "$PREVIOUS_STAGE" != "" ]]; then
+        LAST_STAGE=${IMAGE_TAG}-${PREVIOUS_STAGE##*-}
+    else
+        LAST_STAGE=${IMAGE_TAG}
+    fi
+    
 fi
 
 # Build

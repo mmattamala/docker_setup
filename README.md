@@ -4,7 +4,7 @@ Personal docker setup with all the tools and packages I use: ROS, OpenCV with CU
 ## General overview
 
 * `bin`: stores all the scripts to build the images and run the containers, as well as the default settings.
-* `scripts`: helper files to install the dependencies of the images.
+* `stages`: files that define the different stages to install all the dependencies, creating intermediate images.
 * `targets`: scripts to load all the environment variables to setup different target options (cpu, gpu).
 * `Dockerfile`: the main Dockerfile that builds the images.
 * `entrypoint.sh`: the entrypoint script that is executed when the container is executed. It sources the `.bashrc` file and it can also run other stuff.
@@ -13,6 +13,9 @@ Personal docker setup with all the tools and packages I use: ROS, OpenCV with CU
 This package assumes you have Docker >20.10.10 ([link](https://docs.docker.com/engine/install/ubuntu/)) and NVidia docker ([link](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)) installed.
 
 Please also check the [Troubleshooting](#troubleshooting) section below for more common errors I had while using Docker (like enabling support for NVidia GPUs).
+
+## Building approach
+This repo follows the approach of manually creating different images to incrementally add more dependencies. This can be also addressed by [multi-stage builds](https://docs.docker.com/build/building/multi-stage/#use-a-previous-stage-as-a-new-stage) but I decided to do it manually to have more control on the workflow.
 
 ## Using the repo
 
@@ -24,6 +27,13 @@ If you want to create images for other GPUs or platforms, you can use [these fil
 
 ### Building the images
 While staying in the `docker_setup` folder, we can build the images by setting the corresponding `target`:
+
+```sh
+./bin/build.sh --target=cpu
+```
+
+### Building a specific stage
+This is helpful to debug the building process or to rebuild and image that was updated.
 
 ```sh
 ./bin/build.sh --target=cpu

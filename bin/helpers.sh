@@ -39,8 +39,9 @@ list_targets()
 check_target_exists()
 {
     valid_targets="$(list_targets)"
+    echo "$valid_targets"
     # We grep the list of target to find a substring
-    if [[ $(find_substring "$1" $valid_targets) == "false" ]]; then
+    if [[ $(find_substring "$1" "$valid_targets") == "false" ]]; then
         echo "Target [$1] does not exist. Valid targets: $valid_targets"
         exit 1
     fi
@@ -50,7 +51,7 @@ check_stage_exists()
 {
     valid_stages="$(list_stages) all"
     # We grep the list of stages to find a substring
-    if [[ $(find_substring "$1" $valid_stages) == "false" ]]; then
+    if [[ $(find_substring "$1" "$valid_stages") == "false" ]]; then
         echo "Stage [$1] does not exist. Valid stages: $valid_stages"
         exit 1
     fi

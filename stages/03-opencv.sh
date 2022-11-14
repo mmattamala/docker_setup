@@ -1,4 +1,5 @@
 #!/bin/bash
+# Installation of OpenCV with CUDA support
 set -e
 echo "Installing OpenCV..."
 echo "  WITH_CUDA:       $WITH_CUDA"
@@ -33,9 +34,13 @@ if [[ "$WITH_CUDA" == "true" ]]; then
     fi
 
     # Change the compiler depending on the CUDA version
+    # More info here: https://gist.github.com/ax3l/9489132
     if [[ "$CUDA_VERSION" == "10.2.0" ]]; then
+        # Maximum GCC compiler for CUDA 10.2 is GCC <=8
         apt install g++-7 -y
-        CMAKE_C_COMPILER="/usr/bin/gcc-7"
+        ln -sf /usr/bin/gcc-7 /usr/local/cuda/bin/gcc
+        ln -sf /usr/bin/g++-7 /usr/local/cuda/bin/g++
+        CMAKE_C_COMPILER="/usr/bin/gcc-8"
     else
         CMAKE_C_COMPILER="/usr/bin/gcc"
     fi

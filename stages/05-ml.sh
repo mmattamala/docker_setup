@@ -1,4 +1,5 @@
 #!/bin/bash
+# Installation of ML libraries (Pytorch)
 set -e
 echo "Installing ML packages..."
 echo "  WITH_CUDA:       $WITH_CUDA"
@@ -23,8 +24,32 @@ pip3 install --no-cache-dir \
 echo "Installing Pytorch for CUDA [$CUDA_VERSION]"
 if [[ "$CUDA_VERSION" == "10.2.0" ]]; then
     # Manual compilation for Jetson
+    # Instructions here: https://forums.developer.nvidia.com/t/pytorch-for-jetson/72048
+
     if [[ "$JETPACK_VERSION" != "" ]]; then
-        echo "TODO - install pytorch"
+        echo "Installing Pytorch 10.1.2 due to cudnn8"
+        # 
+        pip3 install ninja
+        pip3 install scikit-build
+
+        apt install g++-7 -y
+        ln -sf /usr/bin/gcc-7 /usr/local/cuda/bin/gcc
+        ln -sf /usr/bin/g++-7 /usr/local/cuda/bin/g++
+
+        export USE_NCCL=0
+        export USE_DISTRIBUTED=0
+        export USE_QNNPACK=0
+        export USE_PYTORCH_QNNPACK=0
+        export TORCH_CUDA_ARCH_LIST="$CUDA_ARCH_BIN"
+
+        export PYTORCH_BUILD_VERSION=1.10.2  # without the leading 'v'
+        export PYTORCH_BUILD_NUMBER=1
+
+        # Clone Pytorch
+        cd /
+        git clone --recursive --branch v$PYTORCH_BUILD_VERSION https://github.com/pytorch/pytorch --depth 1
+        cd pytorch
+        python3 setup.py bdist_wheel
 
     else
         # Normal installation

@@ -41,14 +41,13 @@ if [[ "$WITH_CUDA" != "" ]]; then
     # Install CUDNN
     apt install -y libcudnn*-dev
     # # Install VPI
-    # apt install -y vpi2-dev \
+    apt install -y vpi*-dev
     #                vpi2-samples \
     #                python3.8-vpi2
     # # Install TensorRT
-    # apt install -y tensorrt \
+    apt install -y tensorrt
     #                python3-libnvfer \
     # 	             python3-libnvinfer-dev
-
 
     # Export paths
     echo "export PATH=/usr/local/cuda/bin:$PATH" >> /root/.bashrc

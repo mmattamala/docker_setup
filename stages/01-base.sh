@@ -88,8 +88,8 @@ rm -rf /var/lib/apt/lists/*
 apt-get clean
 
 # Patch LAPACK
-sudo ln -s /usr/include/lapacke.h /usr/include/$(uname -m)-linux-gnu
-sudo ln -s /usr/include/lapack.h /usr/include/$(uname -m)-linux-gnu
+sudo ln -sf /usr/include/lapacke.h /usr/include/$(uname -m)-linux-gnu
+sudo ln -sf /usr/include/lapack.h /usr/include/$(uname -m)-linux-gnu
 
 # Enable mouse for tmux
 echo """# Make mouse useful in copy mode \
