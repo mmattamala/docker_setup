@@ -102,7 +102,7 @@ run_docker_qemu()
     fi
     
     # Run QEMU emulation
-    docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+    docker run --rm --privileged multiarch/qemu-user-static --reset -p yes > /dev/null
 }
 
 compare_architectures()

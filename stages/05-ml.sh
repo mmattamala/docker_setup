@@ -32,12 +32,25 @@ if [[ "$CUDA_VERSION" == "10.2.0" ]]; then
         # 
         pip3 install ninja
         pip3 install scikit-build
+        pip3 install typing-extensions
 
+        sudo apt update
         apt install g++-7 -y
         ln -sf /usr/bin/gcc-7 /usr/local/cuda/bin/gcc
-        ln -sf /usr/bin/g++-7 /usr/local/cuda/bin/g++
+        ln -sf /usr/bin/g++-7 /usr/local/cuda/bin/g++ # Maybe useles with the fix below
 
+        # Set the C and C++ compiler explicitly
+        export CC=/usr/bin/gcc-7
+        export CXX=/usr/bin/g++-7
+
+        # Flags for Pytorch
         export USE_NCCL=0
+        export USE_FBGEMM=0
+        export USE_KINETO=0
+        export BUILD_TEST=0
+        export USE_MKLDNN=0
+        export USE_ITT=0
+        export BUILD_CAFFE2=0
         export USE_DISTRIBUTED=0
         export USE_QNNPACK=0
         export USE_PYTORCH_QNNPACK=0
@@ -46,10 +59,13 @@ if [[ "$CUDA_VERSION" == "10.2.0" ]]; then
         export PYTORCH_BUILD_VERSION=1.10.2  # without the leading 'v'
         export PYTORCH_BUILD_NUMBER=1
 
-        # Clone Pytorch
+        # Clone custom patched Pytorch
+        PYTORCH_FOLDER=/pytorch
         cd /
-        git clone --recursive --branch v$PYTORCH_BUILD_VERSION https://github.com/pytorch/pytorch --depth 1
-        cd pytorch
+        git clone --recursive --depth 1 --branch v$PYTORCH_BUILD_VERSION https://github.com/mmattamala/pytorch-jetson $PYTORCH_FOLDER
+        cd $PYTORCH_FOLDER
+
+        # Build
         python3 setup.py bdist_wheel
 
     else
@@ -120,10 +136,10 @@ elif [[ "$CUDA_VERSION" == "11.6.0" ]]; then
     python3 -m cupyx.tools.install_library --cuda 11.6 --library cutensor
 
 elif [[ "$CUDA_VERSION" == "11.7.0" ]]; then
-    pip33 install --no-cache-dir cupy-cuda117
+    pip3 install --no-cache-dir cupy-cuda117
     python3 -m cupyx.tools.install_library --cuda 11.7 --library cutensor
 
 else
-    pip33 install --no-cache-dir cupy
+    pip3 install --no-cache-dir cupy
 fi
 

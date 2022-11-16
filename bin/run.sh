@@ -98,4 +98,4 @@ docker run -it --rm --net=host \
                     -v ${GIT_DIR}:/root/git \
                     -v ${CATKIN_DIR}:/root/catkin_ws \
                     $EMULATOR_FLAGS \
-                    $IMAGE_TAG
+                    $IMAGE_TAG \

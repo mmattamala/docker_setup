@@ -38,10 +38,11 @@ if [[ "$WITH_CUDA" == "true" ]]; then
     # More info here: https://gist.github.com/ax3l/9489132
     if [[ "$CUDA_VERSION" == "10.2.0" ]]; then
         # Maximum GCC compiler for CUDA 10.2 is GCC <=8
+        # g++-8 will install version 8.4, hence invalid
         apt install g++-7 -y
         ln -sf /usr/bin/gcc-7 /usr/local/cuda/bin/gcc
         ln -sf /usr/bin/g++-7 /usr/local/cuda/bin/g++
-        CMAKE_C_COMPILER="/usr/bin/gcc-8"
+        CMAKE_C_COMPILER="/usr/bin/gcc-7"
     else
         CMAKE_C_COMPILER="/usr/bin/gcc"
     fi
@@ -58,6 +59,12 @@ if [[ "$WITH_CUDA" == "true" ]]; then
         -D CPACK_BINARY_DEB=ON \
         -D CUDA_nppicom_LIBRARY="" \
         -D BUILD_EXAMPLES=OFF \
+        -D WITH_V4L=ON \
+        -D INSTALL_C_EXAMPLES=OFF \
+        -D INSTALL_PYTHON_EXAMPLES=OFF \
+        -D BUILD_EXAMPLES=OFF \
+        -D WITH_WEBP=OFF \
+        -D ENABLE_PRECOMPILED_HEADERS=OFF \
         -D BUILD_opencv_python2=OFF \
         -D BUILD_opencv_python3=ON \
         -D BUILD_opencv_java=OFF \
@@ -71,6 +78,7 @@ if [[ "$WITH_CUDA" == "true" ]]; then
         -D EIGEN_INCLUDE_PATH=/usr/include/eigen3 \
         -D WITH_EIGEN=ON \
         -D ENABLE_NEON=OFF \
+        -D WITH_PROTOBUF=OFF \
         -D OPENCV_DNN_CUDA=OFF \
         -D OPENCV_ENABLE_NONFREE=ON \
         -D OPENCV_EXTRA_MODULES_PATH=/opencv_contrib/modules \
@@ -89,6 +97,7 @@ if [[ "$WITH_CUDA" == "true" ]]; then
         -D BUILD_TIFF=ON \
         -D BUILD_PERF_TESTS=OFF \
         -D BUILD_TESTS=OFF \
+        -D BUILD_opencv_ts=OFF \
         -D BUILD_opencv_cudaarithm=ON \
         -D BUILD_opencv_cudafilters=ON \
         -D BUILD_opencv_cudalegacy=ON \
@@ -97,6 +106,34 @@ if [[ "$WITH_CUDA" == "true" ]]; then
         -D BUILD_opencv_ximgproc=ON \
         -D BUILD_opencv_nonfree=ON \
         -D BUILD_opencv_xphoto=ON \
+        -D BUILD_opencv_rgbd=ON \
+        -D BUILD_opencv_stereo=ON \
+        -D BUILD_opencv_apps=OFF \
+        -D BUILD_opencv_dnn=OFF \
+        -D BUILD_opencv_dnns_easily_fooled=OFF \
+        -D BUILD_opencv_cnn_3dobj=OFF \
+        -D BUILD_opencv_aruco=OFF \
+        -D BUILD_opencv_bgsegm=OFF \
+        -D BUILD_opencv_bioinspired=OFF \
+        -D BUILD_opencv_ccalib=OFF \
+        -D BUILD_opencv_contrib_world=OFF \
+        -D BUILD_opencv_datasets=OFF \
+        -D BUILD_opencv_dpm=OFF \
+        -D BUILD_opencv_face=OFF \
+        -D BUILD_opencv_fuzzy=OFF \
+        -D BUILD_opencv_freetype=OFF \
+        -D BUILD_opencv_hdf=OFF \
+        -D BUILD_opencv_line_descriptor=OFF \
+        -D BUILD_opencv_matlab=OFF \
+        -D BUILD_opencv_optflow=OFF \
+        -D BUILD_opencv_plot=OFF \
+        -D BUILD_opencv_reg=OFF \
+        -D BUILD_opencv_saliency=OFF \
+        -D BUILD_opencv_sfm=OFF \
+        -D BUILD_opencv_structured_light=OFF \
+        -D BUILD_opencv_surface_matching=OFF \
+        -D BUILD_opencv_text=OFF \
+        -D BUILD_opencv_tracking=OFF \
         ../
 
     cd /opencv/build && echo $PWD && make -j$(nproc)
@@ -106,8 +143,8 @@ if [[ "$WITH_CUDA" == "true" ]]; then
     cd /
     echo $PWD
 
-    # Remove OpenCv folder
-    # rm -rf opencv && rm -rf opencv_contrib
+    # Remove OpenCV folder
+    rm -rf opencv && rm -rf opencv_contrib
 
 else
     echo "No CUDA required, skipping"
