@@ -28,45 +28,56 @@ if [[ "$CUDA_VERSION" == "10.2.0" ]]; then
     # Instructions here: https://forums.developer.nvidia.com/t/pytorch-for-jetson/72048
 
     if [[ "$JETPACK_VERSION" != "" ]]; then
-        echo "Installing Pytorch 10.1.2 due to cudnn8"
-        # 
-        pip3 install ninja
-        pip3 install scikit-build
-        pip3 install typing-extensions
+        pip3 install gdown
+        success=$(gdown https://drive.google.com/uc?id=1cc1eZgtANkc8IgD3eyfCS0kBWqgigK4d)
 
-        sudo apt update
-        apt install g++-7 -y
-        ln -sf /usr/bin/gcc-7 /usr/local/cuda/bin/gcc
-        ln -sf /usr/bin/g++-7 /usr/local/cuda/bin/g++ # Maybe useles with the fix below
+        if [[ "$success" == "" ]]; then
+            echo "Installing Pytorch from precompiled wheel (Google Drive)"
+            pip3 install torch-1.10.2-cp38-cp38-linux_aarch64.whl
 
-        # Set the C and C++ compiler explicitly
-        export CC=/usr/bin/gcc-7
-        export CXX=/usr/bin/g++-7
+        else
+            echo "Compilling Pytorch 10.1.2 due to cudnn8"
+            pip3 install ninja
+            pip3 install scikit-build
+            pip3 install typing-extensions
 
-        # Flags for Pytorch
-        export USE_NCCL=0
-        export USE_FBGEMM=0
-        export USE_KINETO=0
-        export BUILD_TEST=0
-        export USE_MKLDNN=0
-        export USE_ITT=0
-        export BUILD_CAFFE2=0
-        export USE_DISTRIBUTED=0
-        export USE_QNNPACK=0
-        export USE_PYTORCH_QNNPACK=0
-        export TORCH_CUDA_ARCH_LIST="$CUDA_ARCH_BIN"
+            sudo apt update
+            apt install g++-7 -y
+            ln -sf /usr/bin/gcc-7 /usr/local/cuda/bin/gcc
+            ln -sf /usr/bin/g++-7 /usr/local/cuda/bin/g++ # Maybe useles with the fix below
 
-        export PYTORCH_BUILD_VERSION=1.10.2  # without the leading 'v'
-        export PYTORCH_BUILD_NUMBER=1
+            # Set the C and C++ compiler explicitly
+            export CC=/usr/bin/gcc-7
+            export CXX=/usr/bin/g++-7
 
-        # Clone custom patched Pytorch
-        PYTORCH_FOLDER=/pytorch
-        cd /
-        git clone --recursive --depth 1 --branch v$PYTORCH_BUILD_VERSION https://github.com/mmattamala/pytorch-jetson $PYTORCH_FOLDER
-        cd $PYTORCH_FOLDER
+            # Flags for Pytorch
+            export USE_NCCL=0
+            export USE_FBGEMM=0
+            export USE_KINETO=0
+            export BUILD_TEST=0
+            export USE_MKLDNN=0
+            export USE_ITT=0
+            export BUILD_CAFFE2=0
+            export USE_DISTRIBUTED=0
+            export USE_QNNPACK=0
+            export USE_PYTORCH_QNNPACK=0
+            export TORCH_CUDA_ARCH_LIST="$CUDA_ARCH_BIN"
 
-        # Build
-        python3 setup.py bdist_wheel
+            export PYTORCH_BUILD_VERSION=1.10.2  # without the leading 'v'
+            export PYTORCH_BUILD_NUMBER=1
+
+            # Clone custom patched Pytorch
+            PYTORCH_FOLDER=/pytorch
+            cd /
+            git clone --recursive --depth 1 --branch v$PYTORCH_BUILD_VERSION https://github.com/mmattamala/pytorch-jetson $PYTORCH_FOLDER
+            cd $PYTORCH_FOLDER
+
+            # Build
+            python3 setup.py bdist_wheel
+
+            # Install
+            pip3 install /torch/dist/*.whl
+        fi
 
     else
         # Normal installation
@@ -75,7 +86,7 @@ if [[ "$CUDA_VERSION" == "10.2.0" ]]; then
             torch==1.12.1+cu102 \
             torchvision==0.13.1+cu102 \
             torchaudio==0.12.1 \
-            --extra-index-url https://download.pytorch.org/whl/cu102
+            --extra-index-url https://download.pytorch.org/whl/cu102 \
     fi
 
 elif [[ "$CUDA_VERSION" == "11.4.0" ]]; then
@@ -91,7 +102,8 @@ elif [[ "$CUDA_VERSION" == "11.4.0" ]]; then
             torch==1.12.1+cu113 \
             torchvision==0.13.1+cu113 \
             torchaudio==0.12.1 \
-            --extra-index-url https://download.pytorch.org/whl/cu113
+            --extra-index-url https://download.pytorch.org/whl/cu113 \
+
     fi
 
 elif [[ "$CUDA_VERSION" == "11.6.0" ]]; then
@@ -99,20 +111,21 @@ elif [[ "$CUDA_VERSION" == "11.6.0" ]]; then
         torch \
         torchvision \
         torchaudio \
-        --extra-index-url https://download.pytorch.org/whl/cu116
+        --extra-index-url https://download.pytorch.org/whl/cu116 \
 
 elif [[ "$CUDA_VERSION" == "11.7.0" ]]; then
     pip3 install --no-cache-dir \
         torch \
         torchvision \
         torchaudio \
-        --extra-index-url https://download.pytorch.org/whl/cu117
+        --extra-index-url https://download.pytorch.org/whl/cu117 \
 
 else
     pip3 install --no-cache-dir \
         torch \
         torchvision \
-        torchaudio
+        torchaudio \
+
 fi
 
 

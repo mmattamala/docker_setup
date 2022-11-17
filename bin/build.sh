@@ -19,7 +19,7 @@ Options:
 # Default target
 TARGET=none
 STAGE=all
-PUSH_IMAGES="false"
+PUSH_IMAGES="true"
 
 # Read arguments
 for i in "$@"
@@ -35,8 +35,8 @@ do
             echo "[build.sh]: Selected stages: '$STAGE'"
             shift
             ;;
-        -p|--push)
-            PUSH_IMAGES="true"
+        -p|--no-push)
+            PUSH_IMAGES="false"
             echo "[build.sh]: Push images after each build: '$PUSH_IMAGES'"
             shift
             ;;

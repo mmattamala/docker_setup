@@ -24,6 +24,7 @@ apt install -y \
     tmux \
     unzip \
     iputils-ping \
+    iproute2 \
     net-tools \
     htop \
     iotop \

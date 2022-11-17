@@ -1,7 +1,10 @@
 # docker_setup
 Personal docker setup with all the tools and packages I use: ROS, OpenCV with CUDA support, PyTorch
 
-The avaialble images can be found in [DockerHub](https://hub.docker.com/u/mmattamala)
+The available images can be found in [DockerHub](https://hub.docker.com/u/mmattamala)
+
+## Acknowledgments
+The setup here is inspired by learnings and snippets by Simone Arreghini and Jonas Frey (ETH Zurich).
 
 ## General overview
 
