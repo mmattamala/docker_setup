@@ -2,6 +2,12 @@
 # This defines some bash helpers and functions
 # author: Matias Mattamala
 
+echo_warning()
+{
+    # Prints WARNING in yellow and the desired message
+    echo -e "\033[43mWARNING:\033[m $1"
+}
+
 find_substring()
 {
     if grep -q "$1" <<< "$2"; then
@@ -42,7 +48,7 @@ check_target_exists()
     valid_targets="$(list_targets)"
     # We grep the list of target to find a substring
     if [[ $(find_substring "$1" "$valid_targets") == "false" ]]; then
-        echo "Target [$1] does not exist. Valid targets: $valid_targets"
+        echo_warning "Target [$1] does not exist. Valid targets: $valid_targets"
         exit 1
     fi
 }
@@ -52,7 +58,7 @@ check_stage_exists()
     valid_stages="$(list_stages) all"
     # We grep the list of stages to find a substring
     if [[ $(find_substring "$1" "$valid_stages") == "false" ]]; then
-        echo "Stage [$1] does not exist. Valid stages: $valid_stages"
+        echo_warning "Stage [$1] does not exist. Valid stages: $valid_stages"
         exit 1
     fi
 }

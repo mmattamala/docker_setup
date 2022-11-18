@@ -13,12 +13,14 @@ Usage: $(basename $0) --target=TARGET [OPTIONS]
 Options:
   -t, --target=<target>    Target to be built: [$(list_targets)]
   -s, --stage=<stage>      Last stage to be built: [$(list_stages)]
-  -p, --no-push            DO NOT push images to DockerHub       
+  --no-push                DO NOT push images to DockerHub
+  --no-build               DO NOT build images to DockerHub
 "
 
 # Default target
 TARGET=none
 STAGE=all
+BUILD_IMAGES="true"
 PUSH_IMAGES="true"
 
 # Read arguments
@@ -27,17 +29,18 @@ do
     case $i in
         -t=*|--target=*)
             TARGET=${i#*=}
-            echo "[build.sh]: Building target: '$TARGET'"
             shift
             ;;
         -s=*|--stage=*)
             STAGE=${i#*=}
-            echo "[build.sh]: Selected stages: '$STAGE'"
             shift
             ;;
-        -p|--no-push)
+        --no-push)
             PUSH_IMAGES="false"
-            echo "[build.sh]: Push images after each build: '$PUSH_IMAGES'"
+            shift
+            ;;
+        --no-build)
+            BUILD_IMAGES="false"
             shift
             ;;
         *)
@@ -46,6 +49,14 @@ do
             ;;
     esac
 done
+
+# Print summary of options
+echo " == build.sh =="
+echo " Target:       '$TARGET'"
+echo " Stage:        '$STAGE'"
+echo " Push images:  '$PUSH_IMAGES'"
+echo " Build images: '$BUILD_IMAGES'"
+echo " ============"
 
 if [[ "$TARGET" == "none" ]]; then
     echo "$__usage"
@@ -83,22 +94,25 @@ fi
 # Build
 for BUILD in ${BUILD_STAGES[@]}; do
     NEW_STAGE=${IMAGE_TAG}-${BUILD##*-}
-    echo "Building [$NEW_STAGE] from [$LAST_STAGE]"
 
-    sudo docker buildx build --build-arg BASE_IMAGE=$LAST_STAGE \
-                         --build-arg SCRIPT=${BUILD}.sh \
-                         --build-arg UBUNTU_VERSION=${UBUNTU_VERSION} \
-                         --build-arg ROS_VERSION=${ROS_VERSION} \
-                         --build-arg WITH_CUDA=${WITH_CUDA} \
-                         --build-arg CUDA_VERSION=${CUDA_VERSION} \
-                         --build-arg CUDA_ARCH_BIN=${CUDA_ARCH_BIN} \
-                         --build-arg JETPACK_VERSION=${JETPACK_VERSION} \
-                         --network=host \
-                         --platform ${BASE_ARCH} \
-                         -t ${NEW_STAGE} -f $DOCKERFILE .
+    if [[ "$BUILD_IMAGES" == "true" ]]; then
+        echo "Building [$NEW_STAGE] from [$LAST_STAGE]"
+        sudo docker buildx build --build-arg BASE_IMAGE=$LAST_STAGE \
+                            --build-arg SCRIPT=${BUILD}.sh \
+                            --build-arg UBUNTU_VERSION=${UBUNTU_VERSION} \
+                            --build-arg ROS_VERSION=${ROS_VERSION} \
+                            --build-arg WITH_CUDA=${WITH_CUDA} \
+                            --build-arg CUDA_VERSION=${CUDA_VERSION} \
+                            --build-arg CUDA_ARCH_BIN=${CUDA_ARCH_BIN} \
+                            --build-arg JETPACK_VERSION=${JETPACK_VERSION} \
+                            --network=host \
+                            --platform ${BASE_ARCH} \
+                            -t ${NEW_STAGE} -f $DOCKERFILE .
+    fi
     
     # Push images if requested
     if [[ "$PUSH_IMAGES" == "true" ]]; then
+        echo "Pushing [$NEW_STAGE]"
         docker push ${NEW_STAGE}
     fi
 

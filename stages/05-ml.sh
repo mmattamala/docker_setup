@@ -42,7 +42,7 @@ if [[ "$CUDA_VERSION" == "10.2.0" ]]; then
             rm torch-1.10.2-cp38-cp38-linux_aarch64.whl
 
         else
-            echo "Compilling PyTorch 10.1.2 due to cudnn8"
+            echo "Compiling PyTorch 10.1.2"
             pip3 install ninja
             pip3 install scikit-build
             pip3 install typing-extensions
@@ -153,19 +153,20 @@ fi
 if [[ "$CUDA_VERSION" == "10.2.0" ]]; then
     pip3 install --no-cache-dir cupy-cuda102 $CUPY_REPO
 
-# elif [[ "$CUDA_VERSION" == "11.4.0" ]]; then
-#     pip3 install --no-cache-dir cupy-cuda114 $CUPY_REPO
-#     python3 -m cupyx.tools.install_library --cuda 11.4 --library cutensor
+elif [[ "$CUDA_VERSION" == "11.4.0" ]]; then
+    pip3 install --no-cache-dir cupy-cuda114 $CUPY_REPO
+    # python3 -m cupyx.tools.install_library --cuda 11.4 --library cutensor
 
-# elif [[ "$CUDA_VERSION" == "11.6.0" ]]; then
-#     pip3 install --no-cache-dir cupy-cuda116 $CUPY_REPO
-#     python3 -m cupyx.tools.install_library --cuda 11.6 --library cutensor
+elif [[ "$CUDA_VERSION" == "11.6.0" ]]; then
+    pip3 install --no-cache-dir cupy-cuda116 $CUPY_REPO
+    # python3 -m cupyx.tools.install_library --cuda 11.6 --library cutensor
 
-# elif [[ "$CUDA_VERSION" == "11.7.0" ]]; then
-#     pip3 install --no-cache-dir cupy-cuda117 $CUPY_REPO
-#     python3 -m cupyx.tools.install_library --cuda 11.7 --library cutensor
+elif [[ "$CUDA_VERSION" == "11.7.0" ]]; then
+    pip3 install --no-cache-dir cupy-cuda117 $CUPY_REPO
+    # python3 -m cupyx.tools.install_library --cuda 11.7 --library cutensor
 
 else
+    echo "Installing cupy without specify the CUDA version, it will compile it..."
     pip3 install --no-cache-dir cupy
 fi
 

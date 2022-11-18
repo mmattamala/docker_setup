@@ -10,9 +10,20 @@
 #    
 # For more options, you can design your own: https://bashrcgenerator.com/
 #
-PREFIX="(docker)"
-PS1="\[$(tput bold)\]\[\033[38;5;33m\]${PREFIX}\[$(tput sgr0)\] \[$(tput sgr0)\]\[$(tput bold)\]\[\033[38;5;204m\]\u@\h\[$(tput sgr0)\]\\$ \[$(tput sgr0)\]"
 
+PS_PREFIX_COLOR="\033[38;5;33m"
+PS_USER_COLOR="\033[38;5;204m"
+PS_HOST_COLOR="\033[38;5;204m"
+PS_DIR_COLOR="\033[38;5;33m"
+
+PS_PREFIX_TEXT="(docker)"
+
+PS_PREFIX="\[$(tput bold)\]\[${PS_PREFIX_COLOR}\]${PS_PREFIX_TEXT}\[$(tput sgr0)\]"
+PS_USER="\[$(tput bold)\]\[${PS_USER_COLOR}\]\u\[$(tput sgr0)\]"
+PS_HOST="\[$(tput bold)\]\[${PS_HOST_COLOR}\]@\h\[$(tput sgr0)\]"
+PS_DIR="\[$(tput bold)\]\[${PS_DIR_COLOR}\]\w\[$(tput sgr0)\]"
+
+PS1="${PS_PREFIX} ${PS_USER}${PS_HOST}:${PS_DIR}\\$ "
 
 ros_network() {
     # This script configures the ROS environment variables according to the route
@@ -22,7 +33,7 @@ ros_network() {
     # The ROS_MASTER_URI is also set, using port 11311. ROS_MASTER needs to be defined
     # as a numeric IP address, not a hostname.
     # author: Michal Staniaszek
-
+    
     if [ "$1" ]; then
 	    ROS_MASTER="$1"
     fi

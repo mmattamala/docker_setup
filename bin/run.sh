@@ -31,35 +31,40 @@ for i in "$@"; do
     case $i in
         -t=*|--target=*)
             TARGET=${i#*=}
-            echo "[run.sh]: Running target: '$TARGET'"
-            shift
-            ;;
-        -i=*|--image=*|--image-id=*)
-            IMAGE_ID=${i#*=}
-            echo "[run.sh]: Running image: '$IMAGE_ID'"
-            shift
-            ;;
-        -g=*|--git=*|--git-dir=*)
-            GIT_DIR=${i#*=}
-            echo "[run.sh]: Git folder to mount: '$GIT_DIR'"
-            shift
-            ;;
-        -c=*|--catkin=*|--catkin-dir=*)
-            CATKIN_DIR=${i#*=}
-            echo "[run.sh]: Catkin folder to mount: '$CATKIN_DIR'"
             shift
             ;;
         -s=*|--stage=*)
             STAGE=${i#*=}
-            echo "[build.sh]: Selected stage: '$STAGE'"
             shift
             ;;
+        -i=*|--image=*|--image-id=*)
+            IMAGE_ID=${i#*=}
+            shift
+            ;;
+        -g=*|--git=*|--git-dir=*)
+            GIT_DIR=${i#*=}
+            shift
+            ;;
+        -c=*|--catkin=*|--catkin-dir=*)
+            CATKIN_DIR=${i#*=}
+            shift
+            ;;
+        
         *)
             echo "$__usage"
             exit 0
             ;;
     esac
 done
+
+# Print summary of options
+echo " == run.sh =="
+echo " Target:       '$TARGET'"
+echo " Stage:        '$STAGE'"
+echo " Images:       '$IMAGE_ID'"
+echo " Mount git:    '$GIT_DIR'"
+echo " Mount catkin: '$CATKIN_DIR'"
+echo " ============"
 
 if [[ "$TARGET" == "none" && "$IMAGE_ID" == "none" ]]; then
     echo "$__usage"
@@ -95,7 +100,7 @@ HOST_ARCH=$(docker info --format '{{ .Architecture }}')
 # Build with emulator if needed
 EMULATOR_FLAGS=""
 if [[ $(compare_architectures $IMAGE_ARCH $HOST_ARCH) == "false" ]]; then
-    echo -e "Architectures [$IMAGE_ARCH] [$HOST_ARCH] are not the same, running emulation..."
+    echo_warning "Architectures [$IMAGE_ARCH] [$HOST_ARCH] are not the same, running emulation..."
     run_docker_qemu
     EMULATOR_FLAGS="--security-opt seccomp=unconfined"
 fi
