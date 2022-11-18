@@ -140,9 +140,6 @@ pip3 install --no-cache-dir pycuda
 # CuPy
 echo "Installing CuPy for CUDA [$CUDA_VERSION]"
 
-# Update library path
-echo "export LD_LIBRARY_PATH=/usr/lib/$(uname -m)-linux-gnu/:$LD_LIBRARY_PATH" >> /root/.bashrc
-
 CUPY_REPO=""
 if [[ "$JETPACK_VERSION" != "" ]]; then
     echo "CuPy for aarch64..."

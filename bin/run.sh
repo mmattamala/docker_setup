@@ -118,5 +118,6 @@ docker run -it --rm --net=host \
                     -v /tmp/.X11-unix/:/tmp/.X11-unix \
                     -v ${GIT_DIR}:/root/git \
                     -v ${CATKIN_DIR}:/root/catkin_ws \
+                    --pull "missing" \
                     $EMULATOR_FLAGS \
                     $IMAGE_TAG \
