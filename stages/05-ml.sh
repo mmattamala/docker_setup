@@ -9,6 +9,9 @@ echo "  CUDA_ARCH_BIN:   $CUDA_ARCH_BIN"
 echo "  JETPACK_VERSION: $JETPACK_VERSION"
 echo "  ROS_VERSION:     $ROS_VERSION"
 
+# Source bashrc to get env variables
+source /root/.bashrc
+
 # Basic numerical and ML libraries
 pip3 install --no-cache-dir \
       numpy \
@@ -28,16 +31,18 @@ if [[ "$CUDA_VERSION" == "10.2.0" ]]; then
     # Instructions here: https://forums.developer.nvidia.com/t/pytorch-for-jetson/72048
 
     if [[ "$JETPACK_VERSION" != "" ]]; then
+
+        # Install PyTorch
         pip3 install gdown
         success=$(gdown https://drive.google.com/uc?id=1cc1eZgtANkc8IgD3eyfCS0kBWqgigK4d)
 
         if [[ "$success" == "" ]]; then
-            echo "Installing Pytorch from precompiled wheel (Google Drive)"
+            echo "Installing PyTorch from precompiled wheel (Google Drive)"
             pip3 install torch-1.10.2-cp38-cp38-linux_aarch64.whl
             rm torch-1.10.2-cp38-cp38-linux_aarch64.whl
 
         else
-            echo "Compilling Pytorch 10.1.2 due to cudnn8"
+            echo "Compilling PyTorch 10.1.2 due to cudnn8"
             pip3 install ninja
             pip3 install scikit-build
             pip3 install typing-extensions
@@ -82,7 +87,7 @@ if [[ "$CUDA_VERSION" == "10.2.0" ]]; then
 
     else
         # Normal installation
-        echo "Warning: Latest Pytorch available for CUDA 10.2.0 is torch 1.12.1"
+        echo "Warning: Latest PyTorch available for CUDA 10.2.0 is torch 1.12.1"
         pip3 install --no-cache-dir \
             torch==1.12.1+cu102 \
             torchvision==0.13.1+cu102 \
@@ -93,7 +98,7 @@ if [[ "$CUDA_VERSION" == "10.2.0" ]]; then
 elif [[ "$CUDA_VERSION" == "11.4.0" ]]; then
     # Manual compilation for Jetson
     if [[ "$JETPACK_VERSION" != "" ]]; then
-        echo "TODO - install pytorch"
+        echo "TODO - install PyTorch"
 
     else
         # Normal installation
@@ -133,25 +138,32 @@ fi
 pip3 install --no-cache-dir pycuda
 
 # CuPy
-echo "Installing CuPy"
+echo "Installing CuPy for CUDA [$CUDA_VERSION]"
+
+# Update library path
+echo "export LD_LIBRARY_PATH=/usr/lib/$(uname -m)-linux-gnu/:$LD_LIBRARY_PATH" >> /root/.bashrc
+
+CUPY_REPO=""
+if [[ "$JETPACK_VERSION" != "" ]]; then
+    echo "CuPy for aarch64..."
+    CUPY_REPO="-f https://pip.cupy.dev/aarch64"
+fi
+
+# Install with flags
 if [[ "$CUDA_VERSION" == "10.2.0" ]]; then
-    if [[ "$JETPACK_VERSION" != "" ]]; then
-        pip3 install --no-cache-dir cupy-cuda102 -f https://pip.cupy.dev/aarch64
-    else
-        pip3 install --no-cache-dir cupy-cuda102
-    fi
+    pip3 install --no-cache-dir cupy-cuda102 $CUPY_REPO
 
-elif [[ "$CUDA_VERSION" == "11.4.0" ]]; then
-    pip3 install --no-cache-dir cupy-cuda114
-    python3 -m cupyx.tools.install_library --cuda 11.4 --library cutensor
+# elif [[ "$CUDA_VERSION" == "11.4.0" ]]; then
+#     pip3 install --no-cache-dir cupy-cuda114 $CUPY_REPO
+#     python3 -m cupyx.tools.install_library --cuda 11.4 --library cutensor
 
-elif [[ "$CUDA_VERSION" == "11.6.0" ]]; then
-    pip3 install --no-cache-dir cupy-cuda116
-    python3 -m cupyx.tools.install_library --cuda 11.6 --library cutensor
+# elif [[ "$CUDA_VERSION" == "11.6.0" ]]; then
+#     pip3 install --no-cache-dir cupy-cuda116 $CUPY_REPO
+#     python3 -m cupyx.tools.install_library --cuda 11.6 --library cutensor
 
-elif [[ "$CUDA_VERSION" == "11.7.0" ]]; then
-    pip3 install --no-cache-dir cupy-cuda117
-    python3 -m cupyx.tools.install_library --cuda 11.7 --library cutensor
+# elif [[ "$CUDA_VERSION" == "11.7.0" ]]; then
+#     pip3 install --no-cache-dir cupy-cuda117 $CUPY_REPO
+#     python3 -m cupyx.tools.install_library --cuda 11.7 --library cutensor
 
 else
     pip3 install --no-cache-dir cupy

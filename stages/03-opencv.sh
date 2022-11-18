@@ -9,6 +9,9 @@ echo "  CUDA_ARCH_BIN:   $CUDA_ARCH_BIN"
 echo "  JETPACK_VERSION: $JETPACK_VERSION"
 echo "  ROS_VERSION:     $ROS_VERSION"
 
+# Source bashrc to get env variables
+source /root/.bashrc
+
 #
 # Install OpenCV
 #

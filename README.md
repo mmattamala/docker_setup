@@ -44,7 +44,7 @@ Usage: build.sh --target=TARGET [OPTIONS]
 Options:
   -t, --target=<target>        Target to be built: [cpu gpu jetson_xavier]
   -s, --stage=<stage>          Last stage to be built: [01-base 02-cuda 03-opencv 04-ros 05-ml 06-extra]
-  -p, --push                   Push images to DockerHub
+  -p, --no-push                DO NOT push images to DockerHub
 ```
 
 ### Running a container

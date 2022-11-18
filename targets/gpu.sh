@@ -16,10 +16,15 @@ UBUNTU_VERSION="ubuntu20.04"
 # ROS version to be installed
 ROS_VERSION="noetic"
 
-# CUDA stuff (not required for this target)
+# CUDA stuff
+# For CUDA_ARCH_BIN:
+# check here:
+#    https://developer.nvidia.com/cuda-gpus
+# or better run (David Wisth's advice):
+#    nvidia-smi --query-gpu=compute_cap --format=csv
 WITH_CUDA="true"
 CUDA_VERSION="11.6.0"
-CUDA_ARCH_BIN="6.1" # For Quadro P2000, check https://developer.nvidia.com/cuda-gpus
+CUDA_ARCH_BIN="5.2;6.1;7.5;8.6" # for DRS laptops
 JETPACK_VERSION=""
 
 # These variables go in the end since they rely on the previous ones

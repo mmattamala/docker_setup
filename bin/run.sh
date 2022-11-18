@@ -95,7 +95,7 @@ HOST_ARCH=$(docker info --format '{{ .Architecture }}')
 # Build with emulator if needed
 EMULATOR_FLAGS=""
 if [[ $(compare_architectures $IMAGE_ARCH $HOST_ARCH) == "false" ]]; then
-    echo "Architectures [$IMAGE_ARCH] [$HOST_ARCH] are not the same, running emulation..."
+    echo -e "Architectures [$IMAGE_ARCH] [$HOST_ARCH] are not the same, running emulation..."
     run_docker_qemu
     EMULATOR_FLAGS="--security-opt seccomp=unconfined"
 fi
