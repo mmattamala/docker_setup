@@ -13,7 +13,7 @@ Usage: $(basename $0) --target=TARGET [OPTIONS]
 Options:
   -t, --target=<target>    Target to be built: [$(list_targets)]
   -s, --stage=<stage>      Last stage to be built: [$(list_stages)]
-  -p, --push               Push images to DockerHub       
+  -p, --no-push            Do not push images to DockerHub       
 "
 
 # Default target

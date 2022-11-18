@@ -46,8 +46,9 @@ RUN rm -rf /var/lib/apt/lists/* && apt-get clean
 
 # ==
 # Copy helper scripts (.bashrc)
-COPY .bash_aliases /root/.bash_aliases.sh
-
+#==
+# Bash aliases
+COPY .bash_aliases /root/.bash_aliases
 
 # ==
 # Setup entrypoint

@@ -34,6 +34,7 @@ if [[ "$CUDA_VERSION" == "10.2.0" ]]; then
         if [[ "$success" == "" ]]; then
             echo "Installing Pytorch from precompiled wheel (Google Drive)"
             pip3 install torch-1.10.2-cp38-cp38-linux_aarch64.whl
+            rm torch-1.10.2-cp38-cp38-linux_aarch64.whl
 
         else
             echo "Compilling Pytorch 10.1.2 due to cudnn8"
@@ -130,9 +131,10 @@ fi
 
 
 # # Pycuda
-# pip3 install --no-cache-dir pycuda
+pip3 install --no-cache-dir pycuda
 
 # CuPy
+echo "Installing CuPy"
 if [[ "$CUDA_VERSION" == "10.2.0" ]]; then
     if [[ "$JETPACK_VERSION" != "" ]]; then
         pip3 install --no-cache-dir cupy-cuda102 -f https://pip.cupy.dev/aarch64

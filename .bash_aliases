@@ -1,6 +1,19 @@
 #!/bin/bash
 # This defines some bash helpers and aliases
 
+# Prompt colors
+# This will output the propmpt like
+#   (docker) user@hostname:
+#  with:
+#    (docker)        in light blue
+#    user@hostname   in pink
+#    
+# For more options, you can design your own: https://bashrcgenerator.com/
+#
+PREFIX="(docker)"
+PS1="\[$(tput bold)\]\[\033[38;5;33m\]${PREFIX}\[$(tput sgr0)\] \[$(tput sgr0)\]\[$(tput bold)\]\[\033[38;5;204m\]\u@\h\[$(tput sgr0)\]\\$ \[$(tput sgr0)\]"
+
+
 ros_network() {
     # This script configures the ROS environment variables according to the route
     # to the ROS_MASTER. ROS_MASTER can either be defined as an evironment variable

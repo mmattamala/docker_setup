@@ -22,6 +22,7 @@ Options:
 # Default target
 TARGET=none
 IMAGE_ID=none
+STAGE=""
 GIT_DIR="$HOME/git"
 CATKIN_DIR="$HOME/catkin_ws"
 
@@ -48,6 +49,11 @@ for i in "$@"; do
             echo "[run.sh]: Catkin folder to mount: '$CATKIN_DIR'"
             shift
             ;;
+        -s=*|--stage=*)
+            STAGE=${i#*=}
+            echo "[build.sh]: Selected stage: '$STAGE'"
+            shift
+            ;;
         *)
             echo "$__usage"
             exit 0
@@ -60,12 +66,22 @@ if [[ "$TARGET" == "none" && "$IMAGE_ID" == "none" ]]; then
 	exit 0
 fi
 
+if [[ "$STAGE" != "" ]]; then
+    # Remove number from stage
+    STAGE=${STAGE##*-}
+fi
+
 # Handle different target cases
 if [[ "$TARGET" != "none" ]]; then
     source targets/$TARGET.sh
     check_target_exists
+
+    # Check stage if requested
+    if [[ "$STAGE" != "" ]]; then
+        IMAGE_TAG=${IMAGE_TAG}-${STAGE##*-}
+    fi
+
 else
-    BASE_IMAGE=$IMAGE_ID
     IMAGE_TAG=$IMAGE_ID
 fi
 
