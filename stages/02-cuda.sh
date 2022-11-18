@@ -32,24 +32,32 @@ if [[ "$WITH_CUDA" != "" ]]; then
             echo "Not supported Jetpack version [$JETPACK_VERSION]"
             exit 1
         fi
+
+        # Update apt
+        apt update
+
+        # Install CUDA
+        apt install -y cuda-toolkit-* 
+
+        # Install CUDNN
+        apt install -y libcudnn*-dev
+        # # Install VPI
+        apt install -y vpi*-dev
+        #                vpi2-samples \
+        #                python3.8-vpi2
+        # # Install TensorRT
+        apt install -y tensorrt
+        #                python3-libnvfer \
+        # 	             python3-libnvinfer-dev
+
+    # else
+    #     # Desktop installation
+    #     DISTRO="$(echo $UBUNTU_VERSION | tr -d .)"
+    #     ARCH="$(uname -m)"
+    #     wget https://developer.download.nvidia.com/compute/cuda/repos/$DISTRO/$ARCH/cuda-keyring_1.0-1_all.deb
+    #     sudo dpkg -i cuda-keyring_1.0-1_all.deb
     fi
     
-    # Update apt
-    apt update
-
-    # Install CUDA
-    apt install -y cuda-toolkit-*
-    # Install CUDNN
-    apt install -y libcudnn*-dev
-    # # Install VPI
-    apt install -y vpi*-dev
-    #                vpi2-samples \
-    #                python3.8-vpi2
-    # # Install TensorRT
-    apt install -y tensorrt
-    #                python3-libnvfer \
-    # 	             python3-libnvinfer-dev
-
     # Export paths
     echo "export PATH=/usr/local/cuda/bin:$PATH" >> /root/.bashrc
     echo "export CPATH=/usr/local/cuda/include:$CPATH" >> /root/.bashrc

@@ -87,7 +87,7 @@ if [[ "$CUDA_VERSION" == "10.2.0" ]]; then
             torch==1.12.1+cu102 \
             torchvision==0.13.1+cu102 \
             torchaudio==0.12.1 \
-            --extra-index-url https://download.pytorch.org/whl/cu102 \
+            --extra-index-url https://download.pytorch.org/whl/cu102
     fi
 
 elif [[ "$CUDA_VERSION" == "11.4.0" ]]; then
@@ -103,8 +103,7 @@ elif [[ "$CUDA_VERSION" == "11.4.0" ]]; then
             torch==1.12.1+cu113 \
             torchvision==0.13.1+cu113 \
             torchaudio==0.12.1 \
-            --extra-index-url https://download.pytorch.org/whl/cu113 \
-
+            --extra-index-url https://download.pytorch.org/whl/cu113
     fi
 
 elif [[ "$CUDA_VERSION" == "11.6.0" ]]; then
@@ -112,20 +111,20 @@ elif [[ "$CUDA_VERSION" == "11.6.0" ]]; then
         torch \
         torchvision \
         torchaudio \
-        --extra-index-url https://download.pytorch.org/whl/cu116 \
+        --extra-index-url https://download.pytorch.org/whl/cu116
 
 elif [[ "$CUDA_VERSION" == "11.7.0" ]]; then
     pip3 install --no-cache-dir \
         torch \
         torchvision \
         torchaudio \
-        --extra-index-url https://download.pytorch.org/whl/cu117 \
+        --extra-index-url https://download.pytorch.org/whl/cu117
 
 else
     pip3 install --no-cache-dir \
         torch \
         torchvision \
-        torchaudio \
+        torchaudio
 
 fi
 
