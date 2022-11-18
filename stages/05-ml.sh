@@ -12,6 +12,74 @@ echo "  ROS_VERSION:     $ROS_VERSION"
 # Source bashrc to get env variables
 source /root/.bashrc
 
+# Helper functions
+build_and_install_pytorch()
+{
+    pip3 install ninja
+    pip3 install scikit-build
+    pip3 install typing-extensions
+
+    sudo apt update
+    apt install g++-7 -y
+    ln -sf /usr/bin/gcc-7 /usr/local/cuda/bin/gcc
+    ln -sf /usr/bin/g++-7 /usr/local/cuda/bin/g++ # Maybe useles with the fix below
+
+    # Set the C and C++ compiler explicitly
+    export CC=/usr/bin/gcc-7
+    export CXX=/usr/bin/g++-7
+
+    # Flags for Pytorch
+    export USE_NCCL=0
+    export USE_FBGEMM=0
+    export USE_KINETO=0
+    export BUILD_TEST=0
+    export USE_MKLDNN=0
+    export USE_ITT=0
+    export BUILD_CAFFE2=0
+    export USE_DISTRIBUTED=0
+    export USE_QNNPACK=0
+    export USE_PYTORCH_QNNPACK=0
+    export TORCH_CUDA_ARCH_LIST="$CUDA_ARCH_BIN"
+
+    export PYTORCH_BUILD_VERSION=$1  # without the leading 'v'
+    export PYTORCH_BUILD_NUMBER=1
+
+    # Clone custom patched Pytorch
+    PYTORCH_FOLDER=/pytorch
+    cd /
+    git clone --recursive --depth 1 --branch v$PYTORCH_BUILD_VERSION https://github.com/mmattamala/pytorch-jetson $PYTORCH_FOLDER
+    cd $PYTORCH_FOLDER
+
+    # Build
+    python3 setup.py bdist_wheel
+
+    # Install
+    pip3 install /torch/dist/*.whl
+
+    # Remove folder
+    cd /
+    rm -rf $PYTORCH_FOLDER
+}
+
+build_and_install_torchvision()
+{
+    export BUILD_VERSION=$1  # without the leading 'v'
+
+    # Clone torchvision
+    TORCHVISION_FOLDER=/torchvision
+    cd /
+    git clone --branch v$TORCHVISION_BUILD_VERSION https://github.com/pytorch/vision $TORCHVISION_FOLDER
+    cd $TORCHVISION_FOLDER
+
+    # Install
+    python3 setup.py install --user
+
+    # Remove folder
+    cd /
+    rm -rf $TORCHVISION_FOLDER
+}
+
+
 # Basic numerical and ML libraries
 pip3 install --no-cache-dir \
       numpy \
@@ -42,47 +110,15 @@ if [[ "$CUDA_VERSION" == "10.2.0" ]]; then
             rm torch-1.10.2-cp38-cp38-linux_aarch64.whl
 
         else
-            echo "Compiling PyTorch 10.1.2"
-            pip3 install ninja
-            pip3 install scikit-build
-            pip3 install typing-extensions
+            echo "Compiling PyTorch 1.10.2"
+            export PYTORCH_VERSION=1.10.2  # without the leading 'v'
+            export TORCHVISION_VERSION=0.11.1
 
-            sudo apt update
-            apt install g++-7 -y
-            ln -sf /usr/bin/gcc-7 /usr/local/cuda/bin/gcc
-            ln -sf /usr/bin/g++-7 /usr/local/cuda/bin/g++ # Maybe useles with the fix below
+            # Build and install pytorch
+            build_and_install_pytorch $PYTORCH_VERSION
 
-            # Set the C and C++ compiler explicitly
-            export CC=/usr/bin/gcc-7
-            export CXX=/usr/bin/g++-7
-
-            # Flags for Pytorch
-            export USE_NCCL=0
-            export USE_FBGEMM=0
-            export USE_KINETO=0
-            export BUILD_TEST=0
-            export USE_MKLDNN=0
-            export USE_ITT=0
-            export BUILD_CAFFE2=0
-            export USE_DISTRIBUTED=0
-            export USE_QNNPACK=0
-            export USE_PYTORCH_QNNPACK=0
-            export TORCH_CUDA_ARCH_LIST="$CUDA_ARCH_BIN"
-
-            export PYTORCH_BUILD_VERSION=1.10.2  # without the leading 'v'
-            export PYTORCH_BUILD_NUMBER=1
-
-            # Clone custom patched Pytorch
-            PYTORCH_FOLDER=/pytorch
-            cd /
-            git clone --recursive --depth 1 --branch v$PYTORCH_BUILD_VERSION https://github.com/mmattamala/pytorch-jetson $PYTORCH_FOLDER
-            cd $PYTORCH_FOLDER
-
-            # Build
-            python3 setup.py bdist_wheel
-
-            # Install
-            pip3 install /torch/dist/*.whl
+            # Torchvision
+            build_and_install_torchvision $TORCHVISION_VERSION
         fi
 
     else
@@ -98,7 +134,17 @@ if [[ "$CUDA_VERSION" == "10.2.0" ]]; then
 elif [[ "$CUDA_VERSION" == "11.4.0" ]]; then
     # Manual compilation for Jetson
     if [[ "$JETPACK_VERSION" != "" ]]; then
-        echo "TODO - install PyTorch"
+        echo "Warning: Latest PyTorch available for CUDA 11.4.0 is torch 1.12.0"
+        export PYTORCH_VERSION=1.12.0  # without the leading 'v'
+        export TORCHVISION_VERSION=0.13.0
+
+        wget https://developer.download.nvidia.com/compute/redist/jp/v50/pytorch/torch-1.12.0a0+2c916ef.nv22.3-cp38-cp38-linux_aarch64.whl -O torch-1.12.0-cp38-cp38m-linux_aarch64.whl
+        pip3 install Cython
+        pip3 install numpy torch-1.12.0-cp38-cp38m-linux_aarch64.whl
+        rm torch-1.12.0-cp38-cp38m-linux_aarch64.whl
+
+        # torchvision v0.13.0
+        build_and_install_torchvision $TORCHVISION_VERSION
 
     else
         # Normal installation
