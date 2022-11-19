@@ -90,6 +90,13 @@ else
     IMAGE_TAG=$IMAGE_ID
 fi
 
+# Check if image exists, otherwise pull it
+if [[ "$(docker images -q $IMAGE_TAG 2> /dev/null)" == "" ]]; then
+    echo_warning "Image [$IMAGE_TAG] not found. Pulling from DockerHub..."
+    docker pull $IMAGE_TAG
+    echo "Done"
+fi
+
 # Get architecture of base image and host system
 IMAGE_OS=$(docker inspect --format '{{ .Os }})' $IMAGE_TAG)
 HOST_OS=$(docker info --format '{{ .OSType }})')
@@ -120,4 +127,4 @@ docker run -it --rm --net=host \
                     -v ${CATKIN_DIR}:/root/catkin_ws \
                     --pull "missing" \
                     $EMULATOR_FLAGS \
-                    $IMAGE_TAG \
+                    $IMAGE_TAG

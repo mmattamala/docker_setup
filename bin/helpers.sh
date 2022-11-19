@@ -5,7 +5,7 @@
 echo_warning()
 {
     # Prints WARNING in yellow and the desired message
-    echo -e "\033[43mWARNING:\033[m $1"
+    echo -e "\033[4;33mWARNING:\033[m $1"
 }
 
 find_substring()
