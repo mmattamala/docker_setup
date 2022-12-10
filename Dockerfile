@@ -50,6 +50,9 @@ RUN rm -rf /var/lib/apt/lists/* && apt-get clean
 # Bash aliases
 COPY .bash_aliases /root/.bash_aliases
 
+# Custom entrypoint
+COPY entrypoints/dummy.sh /custom_entrypoint.sh
+
 # ==
 # Setup entrypoint
 # ==

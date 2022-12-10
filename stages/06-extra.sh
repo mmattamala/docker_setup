@@ -15,3 +15,105 @@ pip3 install --no-cache-dir \
       shapely==1.7.1 \
       chainer \
 
+# Other missing libraries
+apt update
+apt install -y libsystemd-dev
+pip3 install pystemd
+
+# Other libraries for graph neural networks
+# Extra libraries for other ROS dependencies
+pip3 install --no-cache-dir \
+                  black \
+                  flake8 \
+                  pillow==9.2 \
+                  wget \
+                  colorama \
+                  simple-parsing \
+                  kornia \
+                  pytest \
+                  scipy \
+                  scikit-image \
+                  scikit-learn \
+                  seaborn \
+                  pandas \
+                  fast_slic
+
+if [[ "$JETPACK_VERSION" != "" ]]; then
+# Stuff below only applies to Jetson
+# Environment variables to make scikit-learn work
+# If not added, it will raise an error:
+#   ImportError: /usr/local/lib/python3.8/dist-packages/skimage/_shared/../../scikit_image.libs/libgomp-d22c30c5.so.1.0.0: cannot allocate memory in static TLS block
+#   It seems that scikit-image has not been built correctly.
+#
+#   Your install of scikit-image appears to be broken.
+#   Try re-installing the package following the instructions at:
+#   https://scikit-image.org/docs/stable/install.html 
+#
+     export LD_PRELOAD=/usr/local/lib/python3.8/dist-packages/skimage/_shared/../../scikit_image.libs/libgomp-d22c30c5.so.1.0.0
+fi
+
+echo "Installing Pytorch for CUDA [$CUDA_VERSION]"
+if [[ "$JETPACK_VERSION" != "" ]]; then
+      echo "Building torch_geometric from scratch"
+      export LIBRARY_PATH="/usr/local/cuda/lib64:${LIBRARY_PATH}"
+      export TORCH_CUDA_ARCH_LIST="$CUDA_ARCH_BIN"
+      export FORCE_CUDA=1
+
+      pip3 install -v --no-cache-dir \
+            torch-scatter \
+            torch-sparse \
+            torch-cluster \
+            torch-spline-conv \
+            torch-geometric
+else
+      if [[ "$CUDA_VERSION" == "10.2.0" ]]; then
+            pip3 install --no-cache-dir \
+                              pyg-lib \
+                              torch-scatter \
+                              torch-sparse \
+                              torch-cluster \
+                              torch-spline-conv \
+                              torch-geometric \
+                              -f https://data.pyg.org/whl/torch-1.12.0+cu102.html
+
+      elif [[ "$CUDA_VERSION" == "11.6.0" ]]; then
+            pip3 install --no-cache-dir \
+                        pyg-lib \
+                        torch-scatter \
+                        torch-sparse \
+                        torch-cluster \
+                        torch-spline-conv \
+                        torch-geometric \
+                        -f https://data.pyg.org/whl/torch-1.13.0+cu116.html
+
+      elif [[ "$CUDA_VERSION" == "11.7.0" ]]; then
+            pip3 install --no-cache-dir \
+                        pyg-lib \
+                        torch-scatter \
+                        torch-sparse \
+                        torch-cluster \
+                        torch-spline-conv \
+                        torch-geometric \
+                        -f https://data.pyg.org/whl/torch-1.13.0+cu117.html
+
+      else
+            pip3 install --no-cache-dir \
+                        torch-scatter \
+                        torch-sparse \
+                        torch-cluster \
+                        torch-spline-conv \
+                        torch-geometric
+      fi
+fi
+
+# Other learning packages
+pip3 install --no-cache-dir neptune-client[optuna] \
+                            hydra-core \
+                            pytorch_lightning==1.6.5
+
+# Other dependencies
+pip3 install --no-cache-dir \
+            git+https://github.com/lucasb-eyer/pydensecrf.git#egg=pydensecrf \
+            git+https://github.com/mmattamala/liegroups#egg=liegroups \
+            git+https://github.com/leggedrobotics/stego.git#egg=stego \
+            git+https://github.com/JonasFrey96/pytorch_pwc.git#egg=pytorch_pwc==0.0.1

@@ -24,7 +24,7 @@ ROS_VERSION="noetic"
 #    nvidia-smi --query-gpu=compute_cap --format=csv
 WITH_CUDA="true"
 CUDA_VERSION="11.6.0"
-CUDA_ARCH_BIN="5.2;6.1;7.5;8.6" # for DRS laptops
+CUDA_ARCH_BIN="'5.2;6.1;7.5;8.6'" # for DRS laptops
 JETPACK_VERSION=""
 
 # These variables go in the end since they rely on the previous ones

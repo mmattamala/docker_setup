@@ -101,13 +101,18 @@ if [[ "$CUDA_VERSION" == "10.2.0" ]]; then
     if [[ "$JETPACK_VERSION" != "" ]]; then
 
         # Install PyTorch
-        pip3 install gdown
-        success=$(gdown https://drive.google.com/uc?id=1cc1eZgtANkc8IgD3eyfCS0kBWqgigK4d)
+        pip3 install --upgrade gdown
+        success_pytorch=$(gdown https://drive.google.com/uc?id=1cc1eZgtANkc8IgD3eyfCS0kBWqgigK4d)
+        success_torchvision=$(gdown https://drive.google.com/uc?id=16cG8tZKnwNTMqnZ5IUUgk6lHENyLomtI)
 
-        if [[ "$success" == "" ]]; then
+        if [[ "$success_pytorch" == "" && "$success_torchvision" == "" ]]; then
             echo "Installing PyTorch from precompiled wheel (Google Drive)"
             pip3 install torch-1.10.2-cp38-cp38-linux_aarch64.whl
             rm torch-1.10.2-cp38-cp38-linux_aarch64.whl
+
+            echo "Installing Torchvision from precompiled wheel (Google Drive)"
+            pip3 install torchvision-0.11.0a0+fa347eb-cp38-cp38-linux_aarch64.whl
+            rm torchvision-0.11.0a0+fa347eb-cp38-cp38-linux_aarch64.whl
 
         else
             echo "Compiling PyTorch 1.10.2"
@@ -181,7 +186,7 @@ fi
 
 
 # # Pycuda
-pip3 install --no-cache-dir pycuda
+# pip3 install --no-cache-dir pycuda
 
 # CuPy
 echo "Installing CuPy for CUDA [$CUDA_VERSION]"

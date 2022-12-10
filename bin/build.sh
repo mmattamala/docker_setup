@@ -74,21 +74,17 @@ check_stage_exists $STAGE
 BASE_ARCH=$(docker inspect --format '{{ .Os }}/{{ .Architecture }}' $BASE_IMAGE)
 
 # Prepare stages
+LAST_STAGE="$BASE_IMAGE"
+
 if [[ $STAGE == "all" ]]; then
     BUILD_STAGES=$(list_stages)
-    LAST_STAGE="$BASE_IMAGE"
 else
     BUILD_STAGES=$STAGE
     PREVIOUS_STAGE=$(find_previous_stage $STAGE)
 
-    echo "$PREVIOUS_STAGE"
-
     if [[ "$PREVIOUS_STAGE" != "" ]]; then
         LAST_STAGE=${IMAGE_TAG}-${PREVIOUS_STAGE##*-}
-    else
-        LAST_STAGE=${IMAGE_TAG}
     fi
-    
 fi
 
 # Build

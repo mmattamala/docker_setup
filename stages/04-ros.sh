@@ -44,6 +44,7 @@ apt install -y \
     python3-osrf-pycommon
 
 # Rosdep
+rm -f "/etc/ros/rosdep/sources.list.d/20-default.list"
 rosdep init
 rosdep update
 

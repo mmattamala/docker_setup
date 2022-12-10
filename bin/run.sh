@@ -15,9 +15,8 @@ Options:
   -i, --image=<image>          Tag or image id (if not using specific target)
   -g, --git=<git_folder>       Git folder to be mounted (Default: $HOME/git)
   -c, --catkin=<ws_folder>     Catkin workspace folder to be mounted (Default: $HOME/catkin_ws)
+  -e, --entrypoint=<file>      Custom script to be executed when running the container
 "
-
-
 
 # Default target
 TARGET=none
@@ -25,6 +24,7 @@ IMAGE_ID=none
 STAGE=""
 GIT_DIR="$HOME/git"
 CATKIN_DIR="$HOME/catkin_ws"
+ENTRYPOINT_FILE="dummy.sh"
 
 # Read arguments
 for i in "$@"; do
@@ -49,7 +49,10 @@ for i in "$@"; do
             CATKIN_DIR=${i#*=}
             shift
             ;;
-        
+        -e=*|--entrypoint=*)
+            ENTRYPOINT_FILE=${i#*=}
+            shift
+            ;;
         *)
             echo "$__usage"
             exit 0
@@ -125,6 +128,7 @@ docker run -it --rm --net=host \
                     -v /tmp/.X11-unix/:/tmp/.X11-unix \
                     -v ${GIT_DIR}:/root/git \
                     -v ${CATKIN_DIR}:/root/catkin_ws \
+                    -v "$(pwd)/entrypoints/${ENTRYPOINT_FILE}":/custom_entrypoint.sh \
                     --pull "missing" \
                     $EMULATOR_FLAGS \
                     $IMAGE_TAG

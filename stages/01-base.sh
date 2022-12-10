@@ -32,6 +32,7 @@ apt install -y \
     nmap \
     software-properties-common \
     build-essential \
+    ninja-build \
     gdb \
     pkg-config \
     cmake \
@@ -67,14 +68,6 @@ apt install -y \
     libswscale-dev \
     libeigen3-dev \
     libgtk2.0-dev \
-    python3 \
-    python3-pip \
-    python-dev \
-    python-numpy \
-    python3-dev \
-    python3-numpy \
-    python3-matplotlib \
-    python3-vtk7 \
     libopenblas-dev \
     libopenblas-base \
     liblapack-dev \
@@ -84,6 +77,25 @@ apt install -y \
     openmpi-common \
     gfortran \
     libomp-dev \
+    python3 \
+    python3-dev \
+    python3-pip \
+    python-dev \
+    python-numpy \
+    python3-dev \
+    python3-numpy \
+    python3-matplotlib \
+    python3-vtk7
+
+# # Python
+# curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+# python3 get-pip.py
+
+# pip install --no-cache-dir \
+#                 numpy \
+#                 matplotlib
+# apt install -y python3-vtk7
+
 
 # Remove apt repos
 rm -rf /var/lib/apt/lists/*
