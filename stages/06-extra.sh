@@ -97,6 +97,9 @@ else
                         -f https://data.pyg.org/whl/torch-1.13.0+cu117.html
 
       else
+            export LIBRARY_PATH="/usr/local/cuda/lib64:${LIBRARY_PATH}"
+            export TORCH_CUDA_ARCH_LIST="$CUDA_ARCH_BIN"
+            export FORCE_CUDA=1
             pip3 install --no-cache-dir \
                         torch-scatter \
                         torch-sparse \

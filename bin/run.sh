@@ -61,7 +61,7 @@ for i in "$@"; do
 done
 
 ENTRYPOINT_FILEPATH="$(pwd)/entrypoints/${ENTRYPOINT_FILE}"
-if [[ "$(file_exists $ENTRYPOINT_FILE)" == "false" ]]; then
+if [[ "$(check_file_exists $ENTRYPOINT_FILE)" == "false" ]]; then
     ENTRYPOINT_FILEPATH="$(pwd)/entrypoints/dummy.sh"
 fi
 
@@ -91,7 +91,7 @@ if [[ "$TARGET" != "none" ]]; then
     check_target_exists
 
     # Check stage if requested
-    if [[ "$STAGE" != "" ]]; then
+    if [[ "$STAGE" != "" && "$STAGE" != "all" ]]; then
         IMAGE_TAG=${IMAGE_TAG}-${STAGE##*-}
     fi
 
