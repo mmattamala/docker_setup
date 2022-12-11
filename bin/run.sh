@@ -60,13 +60,19 @@ for i in "$@"; do
     esac
 done
 
+ENTRYPOINT_FILEPATH="$(pwd)/entrypoints/${ENTRYPOINT_FILE}"
+if [[ "$(file_exists $ENTRYPOINT_FILE)" == "false" ]]; then
+    ENTRYPOINT_FILEPATH="$(pwd)/entrypoints/dummy.sh"
+fi
+
 # Print summary of options
 echo " == run.sh =="
-echo " Target:       '$TARGET'"
-echo " Stage:        '$STAGE'"
-echo " Images:       '$IMAGE_ID'"
-echo " Mount git:    '$GIT_DIR'"
-echo " Mount catkin: '$CATKIN_DIR'"
+echo " Target:          '$TARGET'"
+echo " Stage:           '$STAGE'"
+echo " Images:          '$IMAGE_ID'"
+echo " Mount git:       '$GIT_DIR'"
+echo " Mount catkin:    '$CATKIN_DIR'"
+echo " Entrypoint file: '$ENTRYPOINT_FILEPATH'"
 echo " ============"
 
 if [[ "$TARGET" == "none" && "$IMAGE_ID" == "none" ]]; then
@@ -128,7 +134,7 @@ docker run -it --rm --net=host \
                     -v /tmp/.X11-unix/:/tmp/.X11-unix \
                     -v ${GIT_DIR}:/root/git \
                     -v ${CATKIN_DIR}:/root/catkin_ws \
-                    -v "$(pwd)/entrypoints/${ENTRYPOINT_FILE}":/custom_entrypoint.sh \
+                    -v "${ENTRYPOINT_FILEPATH}":/custom_entrypoint.sh \
                     --pull "missing" \
                     $EMULATOR_FLAGS \
                     $IMAGE_TAG

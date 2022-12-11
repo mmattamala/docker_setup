@@ -63,6 +63,24 @@ check_stage_exists()
     fi
 }
 
+check_file_exists()
+{
+    if [[ -f "$1" ]]; then
+        echo "true"
+    else
+        echo "false"
+    fi
+}
+
+check_directory_exists()
+{
+    if [[ -d "$1" && ! -L "$1" ]]; then
+        echo "true"
+    else
+        echo "false"
+    fi
+}
+
 find_previous_stage()
 {
     # Based on https://stackoverflow.com/a/31405855

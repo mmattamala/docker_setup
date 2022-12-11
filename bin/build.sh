@@ -56,7 +56,7 @@ echo " Target:       '$TARGET'"
 echo " Stage:        '$STAGE'"
 echo " Push images:  '$PUSH_IMAGES'"
 echo " Build images: '$BUILD_IMAGES'"
-echo " ============"
+echo " =============="
 
 if [[ "$TARGET" == "none" ]]; then
     echo "$__usage"
