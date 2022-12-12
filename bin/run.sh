@@ -61,7 +61,7 @@ for i in "$@"; do
 done
 
 ENTRYPOINT_FILEPATH="$(pwd)/entrypoints/${ENTRYPOINT_FILE}"
-if [[ "$(check_file_exists $ENTRYPOINT_FILE)" == "false" ]]; then
+if [[ "$(check_file_exists $ENTRYPOINT_FILEPATH)" == "false" ]]; then
     ENTRYPOINT_FILEPATH="$(pwd)/entrypoints/dummy.sh"
 fi
 
