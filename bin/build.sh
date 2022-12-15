@@ -70,6 +70,13 @@ check_target_exists $TARGET
 # Check stage exists
 check_stage_exists $STAGE
 
+# Check if base image exists, otherwise pull it
+if [[ "$(docker images -q $BASE_IMAGE 2> /dev/null)" == "" ]]; then
+    echo_warning "Base image [$BASE_IMAGE] not found. Pulling from DockerHub..."
+    docker pull $BASE_IMAGE
+    echo "Done"
+fi
+
 # Get architecture of base image
 BASE_ARCH=$(docker inspect --format '{{ .Os }}/{{ .Architecture }}' $BASE_IMAGE)
 
@@ -93,7 +100,7 @@ for BUILD in ${BUILD_STAGES[@]}; do
 
     if [[ "$BUILD_IMAGES" == "true" ]]; then
         echo "Building [$NEW_STAGE] from [$LAST_STAGE]"
-        sudo docker buildx build --build-arg BASE_IMAGE=$LAST_STAGE \
+        docker buildx build --build-arg BASE_IMAGE=$LAST_STAGE \
                             --build-arg SCRIPT=${BUILD}.sh \
                             --build-arg UBUNTU_VERSION=${UBUNTU_VERSION} \
                             --build-arg ROS_VERSION=${ROS_VERSION} \
@@ -104,8 +111,9 @@ for BUILD in ${BUILD_STAGES[@]}; do
                             --network=host \
                             --platform ${BASE_ARCH} \
                             -t ${NEW_STAGE} -f $DOCKERFILE .
+
     fi
-    
+
     # Push images if requested
     if [[ "$PUSH_IMAGES" == "true" ]]; then
         echo "Pushing [$NEW_STAGE]"
