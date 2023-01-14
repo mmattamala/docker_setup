@@ -4,7 +4,7 @@ Personal docker setup with all the tools and packages I use: ROS, OpenCV with CU
 The available images can be found in [DockerHub](https://hub.docker.com/u/mmattamala)
 
 ## Acknowledgments
-The setup here is inspired by learnings and snippets by Simone Arreghini and Jonas Frey (ETH Zurich).
+The setup here is inspired by advice and snippets by Simone Arreghini and Jonas Frey (ETH Zurich).
 
 ## General overview
 
@@ -15,12 +15,19 @@ The setup here is inspired by learnings and snippets by Simone Arreghini and Jon
 * `entrypoint.sh`: the entrypoint script that is executed when the container is executed. It sources the `.bashrc` file and it can also run other stuff.
 
 ## Dependencies
-This package assumes you have Docker >20.10.10 ([link](https://docs.docker.com/engine/install/ubuntu/)) and NVidia docker ([link](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)) installed.
+This package assumes you have installed:
+- Docker >20.10.10: [link](https://docs.docker.com/engine/install/ubuntu/)
+- Docker buildx: [link](https://github.com/docker/buildx#linux-packages)
+- NVidia docker: [link](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)
+
+Additionally, if you are working on a Jetson board, you need:
+- Jetson Stats: [link](https://github.com/rbonghi/jetson_stats)
 
 Please also check the [Troubleshooting](#troubleshooting) section below for more common errors I had while using Docker (like enabling support for NVidia GPUs).
 
 ## Building approach
 This repo follows the approach of manually creating different images to incrementally add more dependencies. This can be also addressed by [multi-stage builds](https://docs.docker.com/build/building/multi-stage/#use-a-previous-stage-as-a-new-stage) but I decided to do it manually to have more control on the workflow.
+
 
 ## Using the repo
 
@@ -42,9 +49,9 @@ All the options are:
 Usage: build.sh --target=TARGET [OPTIONS]
 
 Options:
-  -t, --target=<target>        Target to be built: [cpu gpu jetson_xavier]
-  -s, --stage=<stage>          Last stage to be built: [01-base 02-cuda 03-opencv 04-ros 05-ml 06-extra]
-  -p, --no-push                DO NOT push images to DockerHub
+  --target=<target>        Target to be built: [cpu gpu jetson_xavier]
+  --stage=<stage>          Last stage to be built: [01-base 02-cuda 03-opencv 04-ros 05-ml 06-extra]
+  --no-push                DO NOT push images to DockerHub
 ```
 
 ### Running a container
@@ -60,10 +67,10 @@ All the options are:
 Usage: run.sh --target=TARGET|--image=IMAGE [OPTIONS]
 
 Options:
-  -t, --target=<target>        Selected target (available ones): [cpu gpu jetson_xavier]
-  -i, --image=<image>          Tag or image id (if not using a specific target)
-  -g, --git=<git_folder>       Git folder to be mounted (Default: /home/matias/git)
-  -c, --catkin=<ws_folder>     Catkin workspace folder to be mounted (Default: /home/matias/catkin_ws)
+  --target=<target>        Selected target (available ones): [cpu gpu jetson_xavier]
+  --image=<image>          Tag or image id (if not using a specific target)
+  --git=<git_folder>       Git folder to be mounted (Default: /home/matias/git)
+  --catkin=<ws_folder>     Catkin workspace folder to be mounted (Default: /home/matias/catkin_ws)
 ```
 
 
@@ -136,3 +143,6 @@ The images are stored in `/var/lib/docker` by default. To change it, modify the 
 ```
 
 If you need more information when doing this on a Jetson, check this [link](https://forums.developer.nvidia.com/t/change-docker-image-storage-location-to-nvme-ssd/156882/2) from the NVidia forums.
+
+### If you get `unknown flag: --build-arg` when building images
+You are missing [Docker buildx](https://github.com/docker/buildx#linux-packages). Follow the instructions so set it up in your system.

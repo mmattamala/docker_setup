@@ -11,11 +11,13 @@ __usage="
 Usage: $(basename $0) --target=TARGET|--image=IMAGE [OPTIONS]
 
 Options:
-  -t, --target=<target>        Selected target (available ones): [$(list_targets)]
-  -i, --image=<image>          Tag or image id (if not using specific target)
-  -g, --git=<git_folder>       Git folder to be mounted (Default: $HOME/git)
-  -c, --catkin=<ws_folder>     Catkin workspace folder to be mounted (Default: $HOME/catkin_ws)
-  -e, --entrypoint=<file>      Custom script to be executed when running the container
+  --target=<target>        Selected target (available ones): [$(list_targets)]
+  --image=<image>          Tag or image id of a docker image (useful to launch other Docker images)
+
+  --stage=<stage>          Use specific stage: [$(list_stages)] (It requires a target to work)
+  --git=<git_folder>       Git folder to be mounted (Default: $HOME/git)
+  --catkin=<ws_folder>     Catkin workspace folder to be mounted (Default: $HOME/catkin_ws)
+  --entrypoint=<file>      Custom entrypoint script to be executed when running the container
 "
 
 # Default target
@@ -29,27 +31,27 @@ ENTRYPOINT_FILE="dummy.sh"
 # Read arguments
 for i in "$@"; do
     case $i in
-        -t=*|--target=*)
+        --target=*)
             TARGET=${i#*=}
             shift
             ;;
-        -s=*|--stage=*)
+        --stage=*)
             STAGE=${i#*=}
             shift
             ;;
-        -i=*|--image=*|--image-id=*)
+        --image=*|--image-id=*)
             IMAGE_ID=${i#*=}
             shift
             ;;
-        -g=*|--git=*|--git-dir=*)
+        --git=*|--git-dir=*)
             GIT_DIR=${i#*=}
             shift
             ;;
-        -c=*|--catkin=*|--catkin-dir=*)
+        --catkin=*|--catkin-dir=*)
             CATKIN_DIR=${i#*=}
             shift
             ;;
-        -e=*|--entrypoint=*)
+        --entrypoint=*)
             ENTRYPOINT_FILE=${i#*=}
             shift
             ;;
@@ -124,7 +126,8 @@ fi
 # Change the gpu flags depending on the platform - Jetson requires different ones
 GPU_FLAGS="--runtime nvidia"
 if [[ "$JETPACK_VERSION" != "" ]]; then
-    GPU_FLAGS="--gpus all -v /run/jtop.sock:/run/jtop.sock"
+    GPU_FLAGS="--gpus all"                         # instead of nvidia runtime
+    GPU_FLAGS+=" -v /run/jtop.sock:/run/jtop.sock" # Required for jetson-stats to work in the container
 fi
 
 # Run docker
