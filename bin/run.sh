@@ -124,7 +124,7 @@ fi
 # Change the gpu flags depending on the platform - Jetson requires different ones
 GPU_FLAGS="--runtime nvidia"
 if [[ "$JETPACK_VERSION" != "" ]]; then
-    GPU_FLAGS="--gpus all"
+    GPU_FLAGS="--gpus all -v /run/jtop.sock:/run/jtop.sock"
 fi
 
 # Run docker

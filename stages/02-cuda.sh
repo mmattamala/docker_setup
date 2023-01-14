@@ -50,6 +50,9 @@ if [[ "$WITH_CUDA" != "" ]]; then
         #                python3-libnvfer \
         # 	             python3-libnvinfer-dev
 
+        # Install jetson stats
+        pip3 install -U jetson-stats
+
     # else
     #     # Desktop installation
     #     DISTRO="$(echo $UBUNTU_VERSION | tr -d .)"

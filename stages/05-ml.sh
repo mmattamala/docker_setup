@@ -218,3 +218,59 @@ else
     pip3 install --no-cache-dir cupy
 fi
 
+echo "Installing Pytorch Geometric for CUDA [$CUDA_VERSION]"
+if [[ "$JETPACK_VERSION" != "" ]]; then
+      echo "Building torch_geometric from scratch"
+      export LIBRARY_PATH="/usr/local/cuda/lib64:${LIBRARY_PATH}"
+      export TORCH_CUDA_ARCH_LIST="$CUDA_ARCH_BIN"
+      export FORCE_CUDA=1
+
+      pip3 install -v --no-cache-dir \
+            torch-scatter \
+            torch-sparse \
+            torch-cluster \
+            torch-spline-conv \
+            torch-geometric
+else
+      if [[ "$CUDA_VERSION" == "10.2.0" ]]; then
+            pip3 install --no-cache-dir \
+                              pyg-lib \
+                              torch-scatter \
+                              torch-sparse \
+                              torch-cluster \
+                              torch-spline-conv \
+                              torch-geometric \
+                              -f https://data.pyg.org/whl/torch-1.12.0+cu102.html
+
+      elif [[ "$CUDA_VERSION" == "11.6.0" ]]; then
+            pip3 install --no-cache-dir \
+                        pyg-lib \
+                        torch-scatter \
+                        torch-sparse \
+                        torch-cluster \
+                        torch-spline-conv \
+                        torch-geometric \
+                        -f https://data.pyg.org/whl/torch-1.13.0+cu116.html
+
+      elif [[ "$CUDA_VERSION" == "11.7.0" ]]; then
+            pip3 install --no-cache-dir \
+                        pyg-lib \
+                        torch-scatter \
+                        torch-sparse \
+                        torch-cluster \
+                        torch-spline-conv \
+                        torch-geometric \
+                        -f https://data.pyg.org/whl/torch-1.13.0+cu117.html
+
+      else
+            export LIBRARY_PATH="/usr/local/cuda/lib64:${LIBRARY_PATH}"
+            export TORCH_CUDA_ARCH_LIST="$CUDA_ARCH_BIN"
+            export FORCE_CUDA=1
+            pip3 install --no-cache-dir \
+                        torch-scatter \
+                        torch-sparse \
+                        torch-cluster \
+                        torch-spline-conv \
+                        torch-geometric
+      fi
+fi
