@@ -57,7 +57,8 @@ build_and_install_pytorch()
     python3 setup.py bdist_wheel
 
     # Install
-    pip3 install /torch/dist/*.whl
+    cd /
+    pip3 install $PYTORCH_FOLDER/dist/*.whl
 
     # Remove folder
     cd /
@@ -71,7 +72,7 @@ build_and_install_torchvision()
     # Clone torchvision
     TORCHVISION_FOLDER=/torchvision
     cd /
-    git clone --branch v$TORCHVISION_BUILD_VERSION https://github.com/pytorch/vision $TORCHVISION_FOLDER
+    git clone --branch v$BUILD_VERSION https://github.com/pytorch/vision $TORCHVISION_FOLDER
     cd $TORCHVISION_FOLDER
 
     # Install
