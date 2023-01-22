@@ -14,7 +14,7 @@ if [[ "$WITH_CUDA" != "" ]]; then
         if [[ "$JETPACK_VERSION" == "r32.5.0" ]]; then
             # Get public key
             apt-key adv --fetch-key http://repo.download.nvidia.com/jetson/jetson-ota-public.asc
-            
+
             # Manually add apt
             touch /etc/apt/sources.list.d/nvidia-l4t-apt-source.list
             echo "deb https://repo.download.nvidia.com/jetson/common r32.5 main" > /etc/apt/sources.list.d/nvidia-l4t-apt-source.list
@@ -23,11 +23,20 @@ if [[ "$WITH_CUDA" != "" ]]; then
         elif [[ "$JETPACK_VERSION" == "r34.1.1" ]]; then
             # Get public key
             apt-key adv --fetch-key http://repo.download.nvidia.com/jetson/jetson-ota-public.asc
-            
+
             # Manually add apt
             touch /etc/apt/sources.list.d/nvidia-l4t-apt-source.list
             echo "deb https://repo.download.nvidia.com/jetson/common r34.1 main" > /etc/apt/sources.list.d/nvidia-l4t-apt-source.list
             echo "deb https://repo.download.nvidia.com/jetson/t194 r34.1 main" >> /etc/apt/sources.list.d/nvidia-l4t-apt-source.list    
+
+        elif [[ "$JETPACK_VERSION" == "r35.1.0" ]]; then
+            # Get public key
+            apt-key adv --fetch-key http://repo.download.nvidia.com/jetson/jetson-ota-public.asc
+
+            # Manually add apt
+            touch /etc/apt/sources.list.d/nvidia-l4t-apt-source.list
+            echo "deb https://repo.download.nvidia.com/jetson/common r35.1 main" > /etc/apt/sources.list.d/nvidia-l4t-apt-source.list
+            echo "deb https://repo.download.nvidia.com/jetson/t194 r35.1 main" >> /etc/apt/sources.list.d/nvidia-l4t-apt-source.list
         else
             echo "Not supported Jetpack version [$JETPACK_VERSION]"
             exit 1

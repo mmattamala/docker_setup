@@ -24,7 +24,8 @@ JETPACK_VERSION="r35.1.0"
 
 # These variables go in the end since they rely on the previous ones
 # Base image for docker
-BASE_IMAGE="arm64v8/ubuntu:focal"
+#BASE_IMAGE="arm64v8/ubuntu:focal"
+BASE_IMAGE="nvcr.io/nvidia/l4t-base:r35.1.0"
 
 # Tag for the created image
 IMAGE_TAG="$USERNAME/devel-$TARGET_NAME:$UBUNTU_VERSION-$ROS_VERSION-cuda$CUDA_VERSION-$JETPACK_VERSION"
