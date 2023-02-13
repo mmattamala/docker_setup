@@ -140,8 +140,12 @@ fi
 # Reference: http://wiki.ros.org/docker/Tutorials/GUI
 XSOCK=/tmp/.X11-unix
 XAUTH=/tmp/.docker.xauth
-
-echo $EXTRA_FLAGS
+then
+    touch $XAUTH
+    xauth_list=$(xauth nlist :0 | sed -e 's/^..../ffff/')
+    xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f $XAUTH nmerge -
+    chmod a+r $XAUTH
+fi
 
 # Run docker
 docker run -it --rm --net=host \
