@@ -140,7 +140,7 @@ fi
 # Reference: http://wiki.ros.org/docker/Tutorials/GUI
 XSOCK=/tmp/.X11-unix
 XAUTH=/tmp/.docker.xauth
-then
+if [ ! -f $XAUTH ]; then
     touch $XAUTH
     xauth_list=$(xauth nlist :0 | sed -e 's/^..../ffff/')
     xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f $XAUTH nmerge -
