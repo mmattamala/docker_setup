@@ -142,7 +142,6 @@ XSOCK=/tmp/.X11-unix
 XAUTH=/tmp/.docker.xauth
 if [ ! -f $XAUTH ]; then
     touch $XAUTH
-    xauth_list=$(xauth nlist :0 | sed -e 's/^..../ffff/')
     xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f $XAUTH nmerge -
     chmod a+r $XAUTH
 fi
