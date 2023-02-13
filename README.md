@@ -146,3 +146,10 @@ If you need more information when doing this on a Jetson, check this [link](http
 
 ### If you get `unknown flag: --build-arg` when building images
 You are missing [Docker buildx](https://github.com/docker/buildx#linux-packages). Follow the instructions so set it up in your system.
+
+### Mount extra devices when running the container (e.g cameras)
+You can use the `--flags` parameter. For example, to load a camera with descriptor `/dev/video2` as `video0` in the container:
+
+```sh
+./bin/run.sh --target=cpu --flags="-v=/dev/video2:/dev/video0"
+```

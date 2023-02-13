@@ -18,6 +18,7 @@ Options:
   --git=<git_folder>       Git folder to be mounted (Default: $HOME/git)
   --catkin=<ws_folder>     Catkin workspace folder to be mounted (Default: $HOME/catkin_ws)
   --entrypoint=<file>      Custom entrypoint script to be executed when running the container
+  --flags=<docker_flags>   Any extra flags passed do docker run (e.g, to mount additional stuff)
 "
 
 # Default target
@@ -27,6 +28,7 @@ STAGE=""
 GIT_DIR="$HOME/git"
 CATKIN_DIR="$HOME/catkin_ws"
 ENTRYPOINT_FILE="dummy.sh"
+EXTRA_FLAGS=""
 
 # Read arguments
 for i in "$@"; do
@@ -53,6 +55,10 @@ for i in "$@"; do
             ;;
         --entrypoint=*)
             ENTRYPOINT_FILE=${i#*=}
+            shift
+            ;;
+        --flags=*)
+            EXTRA_FLAGS=${i#*=}
             shift
             ;;
         *)
@@ -130,14 +136,25 @@ if [[ "$JETPACK_VERSION" != "" ]]; then
     GPU_FLAGS+=" -v /run/jtop.sock:/run/jtop.sock" # Required for jetson-stats to work in the container
 fi
 
+# Enable graphical stuff launch in the container
+# Reference: http://wiki.ros.org/docker/Tutorials/GUI
+XSOCK=/tmp/.X11-unix
+XAUTH=/tmp/.docker.xauth
+
+echo $EXTRA_FLAGS
+
 # Run docker
 docker run -it --rm --net=host \
                     $GPU_FLAGS \
-                    -e DISPLAY=$DISPLAY \
-                    -v /tmp/.X11-unix/:/tmp/.X11-unix \
+                    --volume=$XSOCK:$XSOCK:rw \
+                    --volume=$XAUTH:$XAUTH:rw \
+                    --env="QT_X11_NO_MITSHM=1" \
+                    --env="XAUTHORITY=$XAUTH" \
+                    --env="DISPLAY=$DISPLAY" \
                     -v ${GIT_DIR}:/root/git \
                     -v ${CATKIN_DIR}:/root/catkin_ws \
                     -v "${ENTRYPOINT_FILEPATH}":/custom_entrypoint.sh \
                     --pull "missing" \
                     $EMULATOR_FLAGS \
+                    $EXTRA_FLAGS \
                     $IMAGE_TAG
