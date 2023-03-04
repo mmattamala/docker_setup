@@ -12,13 +12,8 @@ echo "  ROS_VERSION:     $ROS_VERSION"
 # Source bashrc to get env variables
 source /root/.bashrc
 
-# Helper functions
-build_and_install_pytorch()
+install_gcc7()
 {
-    pip3 install ninja
-    pip3 install scikit-build
-    pip3 install typing-extensions
-
     sudo apt update
     apt install g++-7 -y
     ln -sf /usr/bin/gcc-7 /usr/local/cuda/bin/gcc
@@ -27,6 +22,14 @@ build_and_install_pytorch()
     # Set the C and C++ compiler explicitly
     export CC=/usr/bin/gcc-7
     export CXX=/usr/bin/g++-7
+}
+
+# Helper functions
+build_and_install_pytorch()
+{
+    pip3 install ninja
+    pip3 install scikit-build
+    pip3 install typing-extensions
 
     # Flags for Pytorch
     export USE_NCCL=0
@@ -54,7 +57,8 @@ build_and_install_pytorch()
     python3 setup.py bdist_wheel
 
     # Install
-    pip3 install /torch/dist/*.whl
+    cd /
+    pip3 install $PYTORCH_FOLDER/dist/*.whl
 
     # Remove folder
     cd /
@@ -68,7 +72,7 @@ build_and_install_torchvision()
     # Clone torchvision
     TORCHVISION_FOLDER=/torchvision
     cd /
-    git clone --branch v$TORCHVISION_BUILD_VERSION https://github.com/pytorch/vision $TORCHVISION_FOLDER
+    git clone --branch v$BUILD_VERSION https://github.com/pytorch/vision $TORCHVISION_FOLDER
     cd $TORCHVISION_FOLDER
 
     # Install
@@ -120,6 +124,7 @@ if [[ "$CUDA_VERSION" == "10.2.0" ]]; then
             export TORCHVISION_VERSION=0.11.1
 
             # Build and install pytorch
+            install_gcc7
             build_and_install_pytorch $PYTORCH_VERSION
 
             # Torchvision
@@ -143,10 +148,11 @@ elif [[ "$CUDA_VERSION" == "11.4.0" ]]; then
         export PYTORCH_VERSION=1.12.0  # without the leading 'v'
         export TORCHVISION_VERSION=0.13.0
 
-        wget https://developer.download.nvidia.com/compute/redist/jp/v50/pytorch/torch-1.12.0a0+2c916ef.nv22.3-cp38-cp38-linux_aarch64.whl -O torch-1.12.0-cp38-cp38m-linux_aarch64.whl
-        pip3 install Cython
-        pip3 install numpy torch-1.12.0-cp38-cp38m-linux_aarch64.whl
-        rm torch-1.12.0-cp38-cp38m-linux_aarch64.whl
+        #wget https://developer.download.nvidia.com/compute/redist/jp/v50/pytorch/torch-1.12.0a0+2c916ef.nv22.3-cp38-cp38-linux_aarch64.whl -O torch-1.12.0-cp38-cp38m-linux_aarch64.whl
+        #pip3 install Cython
+        #pip3 install numpy torch-1.12.0-cp38-cp38m-linux_aarch64.whl
+        #rm torch-1.12.0-cp38-cp38m-linux_aarch64.whl
+        build_and_install_pytorch $PYTORCH_VERSION
 
         # torchvision v0.13.0
         build_and_install_torchvision $TORCHVISION_VERSION

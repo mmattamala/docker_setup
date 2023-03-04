@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 # Force color prompt
 export force_color_prompt=yes
