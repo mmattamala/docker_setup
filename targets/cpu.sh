@@ -24,7 +24,7 @@ JETPACK_VERSION=""
 
 # These variables go in the end since they rely on the previous ones
 # Base image for docker
-BASE_IMAGE="ubuntu:${UBUNTU_VERSION}"
+BASE_IMAGE="ubuntu:20.04"
 
 # Tag for the created image
 IMAGE_TAG="$USERNAME/devel-$TARGET_NAME:$UBUNTU_VERSION-$ROS_VERSION"
