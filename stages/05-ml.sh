@@ -98,7 +98,11 @@ pip3 install --no-cache-dir \
 
 # PyTorch
 echo "Installing Pytorch for CUDA [$CUDA_VERSION]"
-if [[ "$CUDA_VERSION" == "10.2.0" ]]; then
+if [[ "$CUDA_VERSION" == "" ]]; then
+    echo "Installing PyTorch for CPU"
+    pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
+
+elif [[ "$CUDA_VERSION" == "10.2.0" ]]; then
     # Manual compilation for Jetson
     # Instructions here: https://forums.developer.nvidia.com/t/pytorch-for-jetson/72048
 
@@ -187,7 +191,6 @@ else
         torch \
         torchvision \
         torchaudio
-
 fi
 
 
@@ -204,7 +207,10 @@ if [[ "$JETPACK_VERSION" != "" ]]; then
 fi
 
 # Install with flags
-if [[ "$CUDA_VERSION" == "10.2.0" ]]; then
+if [[ "$CUDA_VERSION" == "" ]]; then
+    echo "Skipping CuPy as CUDA is not available"
+
+elif [[ "$CUDA_VERSION" == "10.2.0" ]]; then
     pip3 install --no-cache-dir cupy-cuda102 $CUPY_REPO
 
 elif [[ "$CUDA_VERSION" == "11.4.0" ]]; then
@@ -225,20 +231,23 @@ else
 fi
 
 echo "Installing Pytorch Geometric for CUDA [$CUDA_VERSION]"
-if [[ "$JETPACK_VERSION" != "" ]]; then
-      echo "Building torch_geometric from scratch"
-      export LIBRARY_PATH="/usr/local/cuda/lib64:${LIBRARY_PATH}"
-      export TORCH_CUDA_ARCH_LIST="$CUDA_ARCH_BIN"
-      export FORCE_CUDA=1
+if [[ "$CUDA_VERSION" == "" ]]; then
+    echo "Skipping Torch Geometric as CUDA is not available"
 
-      pip3 install -v --no-cache-dir \
+elif [[ "$JETPACK_VERSION" != "" ]]; then
+    echo "Building torch_geometric from scratch"
+    export LIBRARY_PATH="/usr/local/cuda/lib64:${LIBRARY_PATH}"
+    export TORCH_CUDA_ARCH_LIST="$CUDA_ARCH_BIN"
+    export FORCE_CUDA=1
+
+    pip3 install -v --no-cache-dir \
             torch-scatter \
             torch-sparse \
             torch-cluster \
             torch-spline-conv \
             torch-geometric
 else
-      if [[ "$CUDA_VERSION" == "10.2.0" ]]; then
+    if [[ "$CUDA_VERSION" == "10.2.0" ]]; then
             pip3 install --no-cache-dir \
                               pyg-lib \
                               torch-scatter \
@@ -248,8 +257,8 @@ else
                               torch-geometric \
                               -f https://data.pyg.org/whl/torch-1.12.0+cu102.html
 
-      elif [[ "$CUDA_VERSION" == "11.6.0" ]]; then
-            pip3 install --no-cache-dir \
+    elif [[ "$CUDA_VERSION" == "11.6.0" ]]; then
+        pip3 install --no-cache-dir \
                         pyg-lib \
                         torch-scatter \
                         torch-sparse \
@@ -258,8 +267,8 @@ else
                         torch-geometric \
                         -f https://data.pyg.org/whl/torch-1.13.0+cu116.html
 
-      elif [[ "$CUDA_VERSION" == "11.7.0" ]]; then
-            pip3 install --no-cache-dir \
+    elif [[ "$CUDA_VERSION" == "11.7.0" ]]; then
+        pip3 install --no-cache-dir \
                         pyg-lib \
                         torch-scatter \
                         torch-sparse \
@@ -268,15 +277,16 @@ else
                         torch-geometric \
                         -f https://data.pyg.org/whl/torch-1.13.0+cu117.html
 
-      else
-            export LIBRARY_PATH="/usr/local/cuda/lib64:${LIBRARY_PATH}"
-            export TORCH_CUDA_ARCH_LIST="$CUDA_ARCH_BIN"
-            export FORCE_CUDA=1
-            pip3 install --no-cache-dir \
+    else
+        export LIBRARY_PATH="/usr/local/cuda/lib64:${LIBRARY_PATH}"
+        export TORCH_CUDA_ARCH_LIST="$CUDA_ARCH_BIN"
+        export FORCE_CUDA=1
+        pip3 install --no-cache-dir \
                         torch-scatter \
                         torch-sparse \
                         torch-cluster \
                         torch-spline-conv \
                         torch-geometric
-      fi
+    fi
 fi
+

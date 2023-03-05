@@ -153,3 +153,27 @@ compare_architectures()
     
     echo "$output"
 }
+
+make_service_file()
+{
+    sudo sh -c 'echo "[Unit]
+    Description=Docker Setup service
+    After=docker.service
+    StartLimitIntervalSec=0
+
+    [Service]
+    Type=simple
+    Restart=always
+    RestartSec=2
+    ExecStart=docker start '$1'
+
+    [Install]
+    WantedBy=multi-user.target" > /etc/systemd/system/docker_setup_'$1'.service'
+
+    echo docker_setup_$1
+}
+
+remove_service_file()
+{
+    sudo rm /etc/systemd/system/docker_setup_$1.service
+}

@@ -19,16 +19,21 @@ Options:
   --catkin=<ws_folder>     Catkin workspace folder to be mounted (Default: $HOME/catkin_ws)
   --entrypoint=<file>      Custom entrypoint script to be executed when running the container
   --flags=<docker_flags>   Any extra flags passed do docker run (e.g, to mount additional stuff)
+
+  --no-rm                  Do not remove the container after closing it
+  --no-it                  Do not run it in interactive mode
 "
 
 # Default target
-TARGET=none
-IMAGE_ID=none
+TARGET=""
+IMAGE_ID=""
 STAGE=""
 GIT_DIR="$HOME/git"
 CATKIN_DIR="$HOME/catkin_ws"
 ENTRYPOINT_FILE="dummy.sh"
 EXTRA_FLAGS=""
+REMOVE_FLAG="--rm"
+INTERACTIVE_FLAG="-it"
 
 # Read arguments
 for i in "$@"; do
@@ -61,6 +66,14 @@ for i in "$@"; do
             EXTRA_FLAGS=${i#*=}
             shift
             ;;
+        --no-rm)
+            REMOVE_FLAG=""
+            shift
+            ;;
+        --no-it)
+            INTERACTIVE_FLAG=""
+            shift
+            ;;
         *)
             echo "$__usage"
             exit 0
@@ -83,7 +96,7 @@ echo " Mount catkin:    '$CATKIN_DIR'"
 echo " Entrypoint file: '$ENTRYPOINT_FILEPATH'"
 echo " ============"
 
-if [[ "$TARGET" == "none" && "$IMAGE_ID" == "none" ]]; then
+if [[ "$TARGET" == "" && "$IMAGE_ID" == "" ]]; then
     echo "$__usage"
 	exit 0
 fi
@@ -94,7 +107,7 @@ if [[ "$STAGE" != "" ]]; then
 fi
 
 # Handle different target cases
-if [[ "$TARGET" != "none" ]]; then
+if [[ "$TARGET" != "" ]]; then
     source targets/$TARGET.sh
     check_target_exists
 
@@ -152,17 +165,19 @@ if [ ! -f $XAUTH ]; then
 fi
 
 # Run docker
-docker run -it --rm --net=host \
-                    $GPU_FLAGS \
-                    --volume=$XSOCK:$XSOCK:rw \
-                    --volume=$XAUTH:$XAUTH:rw \
-                    --env="QT_X11_NO_MITSHM=1" \
-                    --env="XAUTHORITY=$XAUTH" \
-                    --env="DISPLAY=$DISPLAY" \
-                    -v ${GIT_DIR}:/root/git \
-                    -v ${CATKIN_DIR}:/root/catkin_ws \
-                    -v "${ENTRYPOINT_FILEPATH}":/custom_entrypoint.sh \
-                    --pull "missing" \
-                    $EMULATOR_FLAGS \
-                    $EXTRA_FLAGS \
-                    $IMAGE_TAG
+docker run  --net=host \
+            $INTERACTIVE_FLAG \
+            $REMOVE_FLAG \
+            $GPU_FLAGS \
+            --volume=$XSOCK:$XSOCK:rw \
+            --volume=$XAUTH:$XAUTH:rw \
+            --env="QT_X11_NO_MITSHM=1" \
+            --env="XAUTHORITY=$XAUTH" \
+            --env="DISPLAY=$DISPLAY" \
+            -v ${GIT_DIR}:/root/git \
+            -v ${CATKIN_DIR}:/root/catkin_ws \
+            -v "${ENTRYPOINT_FILEPATH}":/custom_entrypoint.sh \
+            --pull "missing" \
+            $EMULATOR_FLAGS \
+            $EXTRA_FLAGS \
+            $IMAGE_TAG
