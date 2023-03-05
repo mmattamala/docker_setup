@@ -154,8 +154,9 @@ compare_architectures()
     echo "$output"
 }
 
-make_service_file()
+make_docker_setup_service_file()
 {
+    service_name="docker-setup-$1"
     sudo sh -c 'echo "[Unit]
 Description=Docker Setup service
 After=docker.service
@@ -168,18 +169,18 @@ RestartSec=2
 ExecStart=docker start '$1'
 
 [Install]
-WantedBy=multi-user.target" > /etc/systemd/system/docker_setup_'$1'.service'
+WantedBy=multi-user.target" > /etc/systemd/system/'$service_name'.service'
 
-    echo docker_setup_$1
-    sudo chmod 644 /etc/systemd/system/docker_setup_$1.service
+    sudo chmod 644 /etc/systemd/system/$service_name.service
     sudo systemctl daemon-reload
-    sudo systemctl start docker_setup_$1
-    sudo systemctl enable docker_setup_$1
+    sudo systemctl start $service_name
+    sudo systemctl enable $service_name
 
+    echo $service_name
 }
 
-remove_service_file()
+remove_docker_setup_service_file()
 {
-    sudo rm /etc/systemd/system/docker_setup_$1.service
+    sudo rm /etc/systemd/system/docker-setup-$1.service
     sudo systemctl daemon-reload
 }

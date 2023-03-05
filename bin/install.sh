@@ -112,7 +112,8 @@ if [[ ${UNINSTALL_FLAG} != "true" ]]; then
 
     # Install service
     echo "Adding service [${DOCKER_SETUP_SERVICE}]..."
-    export DOCKER_SETUP_SERVICE=$(make_service_file ${DOCKER_SETUP_CONTAINER_NAME})
+    export DOCKER_SETUP_SERVICE=$(make_docker_setup_service_file ${DOCKER_SETUP_CONTAINER_NAME})
+    echo $DOCKER_SETUP_SERVICE
     echo "export DOCKER_SETUP_SERVICE=${DOCKER_SETUP_SERVICE}" >> ~/.bashrc
     sudo service ${DOCKER_SETUP_SERVICE} restart
 
@@ -128,7 +129,7 @@ else
     sudo service ${DOCKER_SETUP_SERVICE} stop
 
     # Remove service file
-    remove_service_file ${DOCKER_SETUP_CONTAINER_NAME}
+    remove_docker_setup_service_file ${DOCKER_SETUP_CONTAINER_NAME}
 
     # Stop container
     echo "Stopping and removing container [${DOCKER_SETUP_CONTAINER_NAME}]"

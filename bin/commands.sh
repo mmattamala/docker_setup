@@ -19,5 +19,5 @@ dsbash()
 
 dsstatus()
 {
-  sudo service ${DOCKER_SETUP_SERVICE} status
+    sudo service ${DOCKER_SETUP_SERVICE} status
 }

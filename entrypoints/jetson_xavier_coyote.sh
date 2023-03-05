@@ -16,6 +16,3 @@ echo "Done!"
 
 # Export environment name
 export ENV_WORKSTATION_NAME=jetson
-
-
-source /root/.bashrc
