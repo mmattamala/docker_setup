@@ -4,11 +4,16 @@
 
 dsbash()
 {
+    xhost +local: > /dev/null
     if [ $# -eq 0 ]; then
-        docker exec -it ${DOCKER_SETUP_CONTAINER_NAME} /bin/bash
+        docker exec -it \
+            --env="DISPLAY=$DISPLAY" \
+            ${DOCKER_SETUP_CONTAINER_NAME} /bin/bash
     else
         args=$@
-        docker exec -it ${DOCKER_SETUP_CONTAINER_NAME} /bin/bash -c "source /root/catkin_ws/devel/setup.bash && ${args}"
+        docker exec -it \
+            --env="DISPLAY=$DISPLAY" \
+            ${DOCKER_SETUP_CONTAINER_NAME} /bin/bash -c "source /root/catkin_ws/devel/setup.bash && ${args}"
     fi
 }
 

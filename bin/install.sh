@@ -97,7 +97,7 @@ if [[ ${UNINSTALL_FLAG} != "true" ]]; then
     source $DOCKER_SETUP_ROOT/bin/commands.sh
 
     # Run the container once, with the given name
-    echo "Creating container..."
+    echo "Creating container [${DOCKER_SETUP_CONTAINER_NAME}]..."
     ${DOCKER_SETUP_ROOT}/bin/run.sh \
                         --target=$TARGET \
                         --image=$IMAGE \
@@ -111,7 +111,7 @@ if [[ ${UNINSTALL_FLAG} != "true" ]]; then
     docker container stop ${DOCKER_SETUP_CONTAINER_NAME}
 
     # Install service
-    echo "Adding service..."
+    echo "Adding service [${DOCKER_SETUP_SERVICE}]..."
     export DOCKER_SETUP_SERVICE=$(make_service_file ${DOCKER_SETUP_CONTAINER_NAME})
     echo "export DOCKER_SETUP_SERVICE=${DOCKER_SETUP_SERVICE}" >> ~/.bashrc
     sudo service ${DOCKER_SETUP_SERVICE} restart
@@ -124,12 +124,14 @@ else
     echo "Uninstalling Docker Setup for container [$CONTAINER_NAME]"
 
     # Stop service
+    echo "Stopping and removing service [${DOCKER_SETUP_SERVICE}]"
     sudo service ${DOCKER_SETUP_SERVICE} stop
 
     # Remove service file
     remove_service_file ${DOCKER_SETUP_CONTAINER_NAME}
 
     # Stop container
+    echo "Stopping and removing container [${DOCKER_SETUP_CONTAINER_NAME}]"
     docker container stop ${DOCKER_SETUP_CONTAINER_NAME}
 
     # Remove container
