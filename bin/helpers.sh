@@ -172,6 +172,7 @@ WantedBy=multi-user.target" > /etc/systemd/system/docker_setup_'$1'.service'
 
     echo docker_setup_$1
     sudo chmod 644 /etc/systemd/system/docker_setup_$1.service
+    sudo systemctl daemon-reload
     sudo systemctl start docker_setup_$1
     sudo systemctl enable docker_setup_$1
 
@@ -180,4 +181,5 @@ WantedBy=multi-user.target" > /etc/systemd/system/docker_setup_'$1'.service'
 remove_service_file()
 {
     sudo rm /etc/systemd/system/docker_setup_$1.service
+    sudo systemctl daemon-reload
 }

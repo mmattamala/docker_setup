@@ -164,10 +164,10 @@ docker run  --net=host \
             $INTERACTIVE_FLAG \
             $REMOVE_FLAG \
             $GPU_FLAGS \
-            --volume=$XSOCK:$XSOCK:rw \
-            --volume=$XAUTH:$XAUTH:rw \
+            --volume=$XSOCK:/root/.X11-unix:rw \
+            --volume=$XAUTH:/root/.docker.xauth:rw \
             --env="QT_X11_NO_MITSHM=1" \
-            --env="XAUTHORITY=$XAUTH" \
+            --env="XAUTHORITY=/root/.docker.xauth" \
             --env="DISPLAY=$DISPLAY" \
             -v ${GIT_DIR}:/root/git \
             -v ${CATKIN_DIR}:/root/catkin_ws \
