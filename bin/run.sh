@@ -151,8 +151,8 @@ fi
 
 # Enable graphical stuff launch in the container
 # Reference: http://wiki.ros.org/docker/Tutorials/GUI
-XSOCK=/tmp/.X11-unix
-XAUTH=/tmp/.docker.xauth
+XSOCK=$HOME/.X11-unix
+XAUTH=$HOME/.docker.xauth
 if [ ! -f $XAUTH ]; then
     > $XAUTH # make an empty file
     xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f $XAUTH nmerge -
