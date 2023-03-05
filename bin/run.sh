@@ -144,8 +144,13 @@ fi
 
 # Change the gpu flags depending on the platform - Jetson requires different ones
 GPU_FLAGS="--runtime nvidia"
+
+# Change flags for Xavier
+if [[ "$JETPACK_VERSION" == "r32.5.0" ]]; then
+    GPU_FLAGS="--gpus all" # instead of nvidia runtime
+fi
+
 if [[ "$JETPACK_VERSION" != "" ]]; then
-    GPU_FLAGS="--gpus all"                         # instead of nvidia runtime
     GPU_FLAGS+=" -v /run/jtop.sock:/run/jtop.sock" # Required for jetson-stats to work in the container
 fi
 
