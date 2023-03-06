@@ -81,6 +81,15 @@ check_directory_exists()
     fi
 }
 
+check_container_exists()
+{
+    if [[ "$(docker ps -a -q -f name=$1)" ]]; then
+        echo "true"
+    else
+        echo "false"
+    fi
+}
+
 find_previous_stage()
 {
     # Based on https://stackoverflow.com/a/31405855
@@ -184,3 +193,4 @@ remove_docker_setup_service_file()
     sudo rm /etc/systemd/system/docker-setup-$1.service
     sudo systemctl daemon-reload
 }
+

@@ -98,22 +98,27 @@ if [[ ${UNINSTALL_FLAG} != "true" ]]; then
 
     # Run the container once, with the given name
     echo "Creating container [${DOCKER_SETUP_CONTAINER_NAME}]..."
-    ${DOCKER_SETUP_ROOT}/bin/run.sh \
-                        --target=$TARGET \
-                        --image=$IMAGE \
-                        --stage=$STAGE \
-                        --git=$GIT_DIR \
-                        --catkin=$CATKIN_DIR \
-                        --entrypoint=$ENTRYPOINT_FILE \
-                        --no-rm \
-                        --flags="--name=${DOCKER_SETUP_CONTAINER_NAME} -d" > /dev/null
+    if [[ $(check_container_exists ${DOCKER_SETUP_CONTAINER_NAME}) == "true" ]]; then
+        docker container restart ${DOCKER_SETUP_CONTAINER_NAME}
 
-    docker container stop ${DOCKER_SETUP_CONTAINER_NAME}
+    else
+        # Run new container
+        ${DOCKER_SETUP_ROOT}/bin/run.sh \
+                            --target=$TARGET \
+                            --image=$IMAGE \
+                            --stage=$STAGE \
+                            --git=$GIT_DIR \
+                            --catkin=$CATKIN_DIR \
+                            --entrypoint=$ENTRYPOINT_FILE \
+                            --no-rm \
+                            --flags="--name=${DOCKER_SETUP_CONTAINER_NAME} -d" > /dev/null
+    fi
 
     # Install service
-    echo "Adding service [${DOCKER_SETUP_SERVICE}]..."
+    docker container stop ${DOCKER_SETUP_CONTAINER_NAME}
     export DOCKER_SETUP_SERVICE=$(make_docker_setup_service_file ${DOCKER_SETUP_CONTAINER_NAME})
     echo $DOCKER_SETUP_SERVICE
+    echo "Adding service [${DOCKER_SETUP_SERVICE}]..."
     echo "export DOCKER_SETUP_SERVICE=${DOCKER_SETUP_SERVICE}" >> ~/.bashrc
     sudo service ${DOCKER_SETUP_SERVICE} restart
 

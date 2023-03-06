@@ -52,11 +52,13 @@ COPY .bash_aliases /root/.bash_aliases
 
 # Custom entrypoint
 COPY entrypoints/dummy.sh /custom_entrypoint.sh
+RUN chmod +x /custom_entrypoint.sh
 
 # ==
 # Setup entrypoint
 # ==
 COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["bash"]
 WORKDIR /root/
