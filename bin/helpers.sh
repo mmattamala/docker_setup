@@ -175,7 +175,7 @@ StartLimitIntervalSec=0
 Type=simple
 Restart=always
 RestartSec=2
-ExecStart=docker start '$1'
+ExecStart=/bin/bash -c \"docker start '$1'\"
 
 [Install]
 WantedBy=multi-user.target" > /etc/systemd/system/'$service_name'.service'
