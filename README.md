@@ -89,7 +89,7 @@ Sidenote: The started debuty and container should not take up any resources ther
 
 ## Installation of the container:
 You execute:
-```
+```sh
 ./bin/install.sh --name=jetson_xavier_cerberus --target=jetson_xavier.sh --git=$HOME/git --entrypoint=jetson_xavier_cerberus.sh
 ```
 1. The correct docker image is pulled/build.
@@ -103,7 +103,7 @@ The service is starts automaticially on startup the same container and executes 
 1. You can now use `dsbash` to contain a bash shell inside the container. 
 2. The git folder is mapped inside the container. You should pull the packages outside of the container given that no ssh keys are mapped inside.
 3. Create the typicial catkin_ws/ws and set it up as usually:
-```
+```sh
 mkdir -p ~/catkin_ws/src/
 source /opt/ros/noetic/setup.bash
 cd ~/catkin_ws/
@@ -126,26 +126,26 @@ catkin build
 ## Now we are ready to run the your code
 ### Classicial way:
 1. Ssh into the jetson
-```
+```sh
 ssh anymal-cerberus-jetson
 ```
 2. Start a tmux session
-```
+```sh
 tmux
 ```
 3. Execute dsbash
-```
+```sh
 dsbash
 ```
 4. Execute the anymal_rsl code inside the container
-```
+```sh
 rosrun anymal_rsl jetson.py
 ```
 5. Done
 
 ### Procman: 
 1. Define on OPC a procman configuration `~/procman.pmd` containing the following:
-```
+```json
 group "0.basic" {
     cmd "0.5.jetson MAN" {
         exec = "rosrun anymal_c_rsl jetson.py";
@@ -154,11 +154,11 @@ group "0.basic" {
 }
 ```
 I also like to add to the bashrc to easily open procman:
-```
+```sh
 alias procman="rosrun procman_ros sheriff -l $HOME/procman.pmd"
 ```
 Start procman (dont forget to source your `.bashrc`)
-```
+```sh
 procman
 ```
 
