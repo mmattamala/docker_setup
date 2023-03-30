@@ -97,19 +97,24 @@ export LD_PRELOAD=/usr/local/lib/python3.8/dist-packages/skimage/_shared/../../s
 # User specific enviornment configuration
 export ENV_WORKSTATION_NAME=jetson
 
-# Assess if procman is build
-out=$(source ~/.bashrc && source ~/catkin_ws/devel/setup.bash && echo roscd procman_ros)
-ref=$(echo roscd: No such package/stack \'procman_ros\')
-
-if [ $out == $ref ]; then
-  source ~/.bashrc && source ~/catkin_ws/devel/setup.bash  
-  echo "Warning: procman_ros is not build within the catkin_ws. Therefore the debuty cannot be started!"
+# Assess if catkin_ws can be sourced
+catkin_ws=$(echo ~/catkin_ws/devel/setup.bash)
+if [ -f "$catkin_ws" ]
+then
+    # Assess if procman is build
+    out=$(source ~/.bashrc && source ~/catkin_ws/devel/setup.bash && echo roscd procman_ros)
+    ref=$(echo roscd: No such package/stack \'procman_ros\')
+    if [ $out == $ref ]; then
+        source ~/.bashrc && source ~/catkin_ws/devel/setup.bash  
+        echo "Warning: procman_ros is not build within the catkin_ws. Therefore the debuty cannot be started!"
+    else
+        source ~/.bashrc && source ~/catkin_ws/devel/setup.bash  && rosrun procman_ros deputy -i anymal_cerberus_xavier
+    fi
 else
-  source ~/.bashrc && source ~/catkin_ws/devel/setup.bash  && rosrun procman_ros deputy -i anymal_cerberus_xavier
+    echo "Warning: Catkin_ws does not exist!"
 fi
-
 ```
-This entrypoint sources the `.bashrc`, `catkin_ws` and automaticially start a `procman debuty` with the correct name set to `anymal_cerberus_xavier` if procman_ros is correctly build within the catkin_ws.   
+This entrypoint sources the `.bashrc`, `catkin_ws` and automaticially start a `procman debuty` with the correct name set to `anymal_cerberus_xavier` if procman_ros is correctly build within the catkin_ws. Make sure that the entrypoint can be executed otherwise the service can not run and the container will not start.
 
 As a template for the entrypoint you can use the `entrypoints/jetson_xavier_coyote.sh`  
 
@@ -118,7 +123,7 @@ As a template for the entrypoint you can use the `entrypoints/jetson_xavier_coyo
 ## Installation of the container:
 Simply execute:
 ```sh
-./bin/install.sh --name=jetson_xavier_cerberus --target=jetson_xavier.sh --git=$HOME/git --entrypoint=jetson_xavier_cerberus.sh
+./bin/install.sh --name=jetson_xavier_cerberus --target=jetson_xavier --git=$HOME/git --entrypoint=jetson_xavier_cerberus.sh
 ```
 
 Explanation:
@@ -156,15 +161,17 @@ cd ~/catkin_ws/
 catkin init
 catkin config --extend /opt/ros/noetic
 catkin config --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo
-ln -s /root/git/anymal_rsl /root/caktin_ws/src
-ln -s /root/git/catkin_simple /root/caktin_ws/src
-ln -s /root/git/elevation_mapping_cupy /root/caktin_ws/src
-ln -s /root/git/glog_catkin /root/caktin_ws/src
-ln -s /root/git/procman_ros /root/caktin_ws/src
-ln -s /root/git/pybind11_catkin /root/caktin_ws/src
-ln -s /root/git/raw_image_pipeline /root/caktin_ws/src
+ln -s /root/git/anymal_rsl /root/catkin_ws/src/
+ln -s /root/git/catkin_simple /root/catkin_ws/src/
+ln -s /root/git/elevation_mapping_cupy /root/catkin_ws/src/
+ln -s /root/git/glog_catkin /root/catkin_ws/src/
+ln -s /root/git/procman_ros /root/catkin_ws/src/
+ln -s /root/git/pybind11_catkin /root/catkin_ws/src/
+ln -s /root/git/raw_image_pipeline /root/catkin_ws/src/
+ln -s /root/git/grid_map /root/catkin_ws/src/
 cd $HOME/catkin_ws
-catkin build
+catkin build procman_ros
+catkin build anymal_c_rsl_jetson
 ```
 4. Having the catkin_ws not mapped inside the container avoids permission issues between the host user and container defined user. 
 5. Now log out of the container using `exit` and restart the container `docker restart jetson_xavier_cerberus` - This will restart the container and ensure that procman is loaded with the correct packages available within the catkin_ws.
