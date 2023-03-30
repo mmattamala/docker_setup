@@ -81,26 +81,68 @@ To be completed
 ## Explanation
 
 ## Preperation pre-installation: 
-1. In the following we will install the jetson xavier docker image on the robot cerberus.
-2. We need to define the entrypoint of the container under `entrypoints/jetson_xavier_cerberus.sh`:
-This entrypoint should source the `.bashrc`, `catkin_ws` and automaticially start a `procman debuty` with the correct name.   
-As a template you can use the `entrypoints/jetson_xavier_coyote.sh`
-Sidenote: The started debuty and container should not take up any resources therefore can be simply ignored when not using the container installation.
+In the following we will install the jetson xavier docker image on the robot cerberus.  
+
+We need to define the entrypoint of the container under `entrypoints/jetson_xavier_cerberus.sh`
+```sh
+#!/bin/bash
+
+# Fix for skimage
+export LD_PRELOAD=/usr/local/lib/python3.8/dist-packages/skimage/_shared/../../scikit_image.libs/libgomp-d22c30c5.so.1.0.0
+
+# User specific enviornment configuration
+export ENV_WORKSTATION_NAME=jetson
+
+# Assess if procman is build
+out=$(source ~/.bashrc && source ~/catkin_ws/devel/setup.bash && echo roscd procman_ros)
+ref=$(echo roscd: No such package/stack \'procman_ros\')
+
+if [ $out == $ref ]; then
+  source ~/.bashrc && source ~/catkin_ws/devel/setup.bash  
+  echo "Warning: procman_ros is not build within the catkin_ws. Therefore the debuty cannot be started!"
+else
+  source ~/.bashrc && source ~/catkin_ws/devel/setup.bash  && rosrun procman_ros deputy -i anymal_cerberus_xavier
+fi
+
+```
+This entrypoint sources the `.bashrc`, `catkin_ws` and automaticially start a `procman debuty` with the correct name set to `anymal_cerberus_xavier` if procman_ros is correctly build within the catkin_ws.   
+
+As a template you can use the `entrypoints/jetson_xavier_coyote.sh`  
+
+`Sidenote:` Running the idealing procman debuty inside the container does not take up any resources, therefore it can always run in the background, even when not used.
 
 ## Installation of the container:
-You execute:
+Simply execute:
 ```sh
 ./bin/install.sh --name=jetson_xavier_cerberus --target=jetson_xavier.sh --git=$HOME/git --entrypoint=jetson_xavier_cerberus.sh
 ```
+
+Explanation:
 1. The correct docker image is pulled/build.
 2. A background service is added under: `/etc/systemd/system/docker-setup-jetson_xavier_cerberus.service`
 The service is starts automaticially on startup the same container and executes what is defined within the entrypoint. 
-3. Within the install script the `bin/run.sh` script is called.
-4. You should now when executing `docker ps` see a running container with the name `jetson_xavier_cerberus`
+3. The following files will be appended to the `.bashrc`
+```sh
+# == Docker setup ini ==
+export DOCKER_SETUP_ROOT=/home/tutuna/git/docker_setup
+export DOCKER_SETUP_CONTAINER_NAME=jetson_xavier_cerberus
+source $DOCKER_SETUP_ROOT/bin/commands.sh
+export DOCKER_SETUP_SERVICE=docker-setup-jetson_xavier_cerberus
+```
+Sourcing the commands, setting system variables for the path to the docker_setup repository, container name and background service name.
 
+4. Within the install script the `bin/run.sh` script is called, which directly spins up the container.
+5. You should now when executing `docker ps` see a running container with the name `jetson_xavier_cerberus`
+
+```shell
+tutuna@anymal-cerberus-jetson:~/git/docker_setup$ docker ps
+CONTAINER ID   IMAGE                                                           COMMAND                 CREATED      STATUS         PORTS     NAMES
+aece32b86eb5   mmattamala/devel-jetson:ubuntu20.04-noetic-cuda10.2.0-r32.5.0   "/entrypoint.sh bash"   1 min ago   Up 15 months             jetson_xavier_cerberus
+```
+6. Make sure to source your `.bashrc`
 
 ## Setting up your catkin_ws:
-1. You can now use `dsbash` to contain a bash shell inside the container. 
+1. You can now use `dsbash` to obtain a bash shell inside the container - this command is defined within `bin/commands.sh`
 2. The git folder is mapped inside the container. You should pull the packages outside of the container given that no ssh keys are mapped inside.
 3. Create the typicial catkin_ws/ws and set it up as usually:
 ```sh
@@ -120,7 +162,7 @@ ln -s /root/git/raw_image_pipeline /root/caktin_ws/src
 cd $HOME/catkin_ws
 catkin build
 ```
-4. Having the catkin_ws not mapped inside the container avoid permission issues between the host user and container defined user. 
+4. Having the catkin_ws not mapped inside the container avoids permission issues between the host user and container defined user. 
 5. Now log out of the container using `exit` and restart the container `docker restart jetson_xavier_cerberus` - This will restart the container and ensure that procman is loaded with the correct packages available within the catkin_ws.
 
 ## Now we are ready to run the your code
@@ -164,12 +206,7 @@ procman
 
 
 ## Changing the content of the catkin_ws
-Make when chaning things inside the catkin_ws and you want to start them via the procman to restart the container such that procman is restarted and the catkin_ws newly sourced. 
-
-Warning stuff breaks if procman is not build>
-print warning if procman is not build
-otherwise execute procman
-
+Make sure when changing things inside the `catkin_ws` and you want to start them via the procman to restart the container such that procman is restarted and the catkin_ws newly sourced. 
 
 ## Troubleshooting
 Just writing down some annoying problems I found and how to fix them
