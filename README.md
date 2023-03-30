@@ -82,12 +82,12 @@ To be completed
 
 ## Pre-installation: 
 In the following we will install the jetson xavier docker image on the robot cerberus.  
-Clone the repository
+Clone the repository:
 ```
 cd $HOME/git && git clone git@github.com:mmattamala/docker_setup.git
 ```
 
-We need to create a new entrypoint of the container under `entrypoints/jetson_xavier_cerberus.sh`
+Create a new entrypoint of the container under `entrypoints/jetson_xavier_cerberus.sh`:
 ```sh
 #!/bin/bash
 
