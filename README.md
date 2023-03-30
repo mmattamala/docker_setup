@@ -198,7 +198,7 @@ rosrun anymal_rsl jetson.py
 
 ### Procman: 
 1. Define on OPC a procman configuration `~/procman.pmd` containing the following:
-```json
+```
 group "0.basic" {
     cmd "0.5.jetson MAN" {
         exec = "rosrun anymal_c_rsl jetson.py";
