@@ -153,7 +153,7 @@ aece32b86eb5   mmattamala/devel-jetson:ubuntu20.04-noetic-cuda10.2.0-r32.5.0   "
 ## Setting up your catkin_ws:
 1. You can now use `dsbash` to obtain a bash shell inside the container - this command is defined within `bin/commands.sh`
 2. The git folder is mapped inside the container. You should pull the packages outside of the container given that no ssh keys are mapped inside.
-3. Create the typicial catkin_ws/ws and set it up as usually:
+3. Create the typicial `catkin_ws/src` and set it up as usually:
 ```sh
 mkdir -p ~/catkin_ws/src/
 source /opt/ros/noetic/setup.bash
@@ -206,11 +206,11 @@ group "0.basic" {
     }
 }
 ```
-I also like to add to the bashrc to easily open procman:
+We recommend to add an alias to the OPC `.bashrc` to easily access procman:
 ```sh
 alias procman="rosrun procman_ros sheriff -l $HOME/procman.pmd"
 ```
-Start procman (dont forget to source your `.bashrc`)
+Start procman (don not forget to source your `.bashrc` before):
 ```sh
 procman
 ```
