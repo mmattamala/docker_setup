@@ -78,12 +78,16 @@ Options:
 To be completed
 
 
-## Explanation
+# Quick-Start Setting Up
 
-## Preperation pre-installation: 
+## Pre-installation: 
 In the following we will install the jetson xavier docker image on the robot cerberus.  
+Clone the repository
+```
+cd $HOME/git && git clone git@github.com:mmattamala/docker_setup.git
+```
 
-We need to define the entrypoint of the container under `entrypoints/jetson_xavier_cerberus.sh`
+We need to create a new entrypoint of the container under `entrypoints/jetson_xavier_cerberus.sh`
 ```sh
 #!/bin/bash
 
@@ -107,7 +111,7 @@ fi
 ```
 This entrypoint sources the `.bashrc`, `catkin_ws` and automaticially start a `procman debuty` with the correct name set to `anymal_cerberus_xavier` if procman_ros is correctly build within the catkin_ws.   
 
-As a template you can use the `entrypoints/jetson_xavier_coyote.sh`  
+As a template for the entrypoint you can use the `entrypoints/jetson_xavier_coyote.sh`  
 
 `Sidenote:` Running the idealing procman debuty inside the container does not take up any resources, therefore it can always run in the background, even when not used.
 
