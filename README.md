@@ -191,16 +191,34 @@ After sourcing your `.bashrc`, you can execute some basic tests to confirm that 
 
 1. Run `docker ps` to see a running container with the name `jetson_xavier_cerberus`
 
-```shell
+```sh
 user@hostname:~/git/docker_setup$ docker ps
 CONTAINER ID   IMAGE                                                           COMMAND                 CREATED      STATUS         PORTS     NAMES
 aece32b86eb5   mmattamala/devel-jetson:ubuntu20.04-noetic-cuda10.2.0-r32.5.0   "/entrypoint.sh bash"   1 min ago   Up 15 months             jetson_xavier_cerberus
 ```
 
-2. Run `dsstatus` to check the status of the background service.
+2. Run `dsstatus` to check the status of the background service. It should look like:
+
+```sh
+● docker-setup-gpu.service - Docker Setup service
+     Loaded: loaded (/etc/systemd/system/docker-setup-gpu.service; enabled; vendor preset: enabled)
+     Active: activating (auto-restart) since Mon 2023-04-10 16:07:42 BST; 1s ago
+    Process: 73193 ExecStart=/usr/bin/docker start gpu (code=exited, status=0/SUCCESS)
+   Main PID: 73193 (code=exited, status=0/SUCCESS)
+```
+
 3. Run `dsbash` to start a bash terminal on the background container.
 
+```sh
+bash: /root/catkin_ws/devel/setup.bash: No such file or directory
+(docker) root@hostname:~# 
+```
+
 > 💡 Both `dstatus` and `dsbash` are defined in [`bin/commands.sh`](`bin/commands.sh`), which is sourced in your `bashrc`.
+
+> ⚠️ The error `bash: /root/catkin_ws/devel/setup.bash: No such file or directory` is expected as the `catkin_ws` has not been set up yet.
+
+</br>
 
 #### Setting up your catkin_ws:
 
@@ -225,6 +243,8 @@ catkin build procman_ros
 4. Now log out of the container using `exit` or _Ctrl+D_ and restart the container `docker restart jetson_xavier_cerberus`. This will ensure that the procman deputy is loaded with the correct packages available within the `catkin_ws`.
 
 > 💡 By defining `catkin_ws` inside the container we avoid conflicts between the host user and container's `root` user.
+
+</br>
 
 #### Running code:
 
@@ -315,6 +335,8 @@ procman
 
 Just writing down some we have found working with Docker in different platforms and how to fix them.
 
+</br>
+
 ### To avoid using sudo
 
 Add your user to the Docker group
@@ -330,6 +352,8 @@ Add your user to the docker group.
 ```sh
 sudo usermod -aG docker $USER
 ```
+
+</br>
 
 ### Enable the nvidia runtime
 
@@ -365,6 +389,8 @@ Start the daemon again
 sudo service docker restart
 ```
 
+</br>
+
 ### Change default directory for docker images
 
 The images are stored in `/var/lib/docker` by default. To change it, modify the same `daemon.json` file to add the `data-root` entry:
@@ -384,9 +410,13 @@ The images are stored in `/var/lib/docker` by default. To change it, modify the 
 
 If you need more information when doing this on a Jetson, check this [link](https://forums.developer.nvidia.com/t/change-docker-image-storage-location-to-nvme-ssd/156882/2) from the NVidia forums.
 
+</br>
+
 ### If you get `unknown flag: --build-arg` when building images
 
 You are missing [Docker buildx](https://github.com/docker/buildx#linux-packages). Follow the instructions so set it up in your system.
+
+</br>
 
 ### Mount extra devices when running the container (e.g cameras)
 
