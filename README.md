@@ -1,10 +1,20 @@
 # docker_setup
-Personal docker setup with all the tools and packages I use: ROS, OpenCV with CUDA support, PyTorch
+
+Personal package to work with Docker with all the tools and packages I use: ROS, OpenCV with CUDA support, PyTorch.
+It allows to:
+
+1. **Build new images** that rely on some of the packages mentioned above.
+2. **Run them** in an easy way.
+3. **Set up containers as background process** to allow easy deployment on our robots.
 
 The available images can be found in [DockerHub](https://hub.docker.com/u/mmattamala)
 
+</br>
+
 ## Acknowledgments
 The setup here is inspired by advice and snippets by Simone Arreghini and Jonas Frey (ETH Zurich).
+
+</br>
 
 ## General overview
 
@@ -14,30 +24,42 @@ The setup here is inspired by advice and snippets by Simone Arreghini and Jonas 
 * `Dockerfile`: the main Dockerfile that builds the images.
 * `entrypoint.sh`: the entrypoint script that is executed when the container is executed. It sources the `.bashrc` file and it can also run other stuff.
 
+</br>
+
 ## Dependencies
+
 This package assumes you have installed:
-- Docker >20.10.10: [link](https://docs.docker.com/engine/install/ubuntu/)
-- Docker buildx: [link](https://github.com/docker/buildx#linux-packages)
-- NVidia docker: [link](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)
+
+* Docker >20.10.10: [link](https://docs.docker.com/engine/install/ubuntu/)
+* Docker buildx: [link](https://github.com/docker/buildx#linux-packages)
+* NVidia docker: [link](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)
 
 Additionally, if you are working on a Jetson board, you need:
-- Jetson Stats: [link](https://github.com/rbonghi/jetson_stats)
+
+* Jetson Stats: [link](https://github.com/rbonghi/jetson_stats)
 
 Please also check the [Troubleshooting](#troubleshooting) section below for more common errors I had while using Docker (like enabling support for NVidia GPUs).
 
+</br>
+
 ## Building approach
+
 This repo follows the approach of manually creating different images to incrementally add more dependencies. This can be also addressed by [multi-stage builds](https://docs.docker.com/build/building/multi-stage/#use-a-previous-stage-as-a-new-stage) but I decided to do it manually to have more control on the workflow.
 
+</br>
 
 ## Using the repo
 
 ### Setting up the image targets
+
 The targets define different configurations we can build images for, i.e, CPU or GPU-based platforms. For example, the script [`gpu.sh`](targets/gpu.sh) configures all the variables required for my laptop.
 
 If you want to create images for other GPUs or platforms, you can use [these files](targets) as a reference.
 
+</br>
 
 ### Building the images
+
 While staying in the `docker_setup` folder, we can build the images using the `build.sh` script. For instance, to build all the stages of the `cpu` target:
 
 ```sh
@@ -45,6 +67,7 @@ While staying in the `docker_setup` folder, we can build the images using the `b
 ```
 
 All the options are:
+
 ```sh
 Usage: build.sh --target=TARGET [OPTIONS]
 
@@ -53,6 +76,8 @@ Options:
   --stage=<stage>          Last stage to be built: [01-base 02-cuda 03-opencv 04-ros 05-ml 06-extra]
   --no-push                DO NOT push images to DockerHub
 ```
+
+</br>
 
 ### Running a container
 
@@ -63,6 +88,7 @@ To run a container from an image we built, we instead use the `run.sh` script. F
 ```
 
 All the options are:
+
 ```sh
 Usage: run.sh --target=TARGET|--image=IMAGE [OPTIONS]
 
@@ -72,22 +98,26 @@ Options:
   --git=<git_folder>       Git folder to be mounted (Default: /home/matias/git)
 ```
 
+</br>
 
-### Pushing images to the cloud
+## Background installation
 
-To be completed
+The scripts in this package also allow to have a container running as a background process, so it can be easily used to test GPU applications or launch processes via [Procman](https://github.com/ori-drs/procman_ros).
+The following instructions explain how to to this in a clean computer (e.g a Jetson board).
 
+</br>
 
-# Quick-Start Setting Up
+### Pre-installation
 
-## Pre-installation: 
-In the following we will install the jetson xavier docker image on the robot cerberus.  
-Clone the repository:
-```
-cd $HOME/git && git clone git@github.com:mmattamala/docker_setup.git
-```
+1. Make the `git` folder if it doesn't exist `mkdir $HOME/git && cd $HOME/dir`
+2. Clone this repo: `git clone git@github.com:mmattamala/docker_setup.git`
+3. Create a new entrypoint for the container under `entrypoints/your_platform_name>.sh`. You can find some examples in the [`entrypoints`](entrypoints/) folder
 
-Create a new entrypoint of the container under `entrypoints/jetson_xavier_cerberus.sh`:
+The entrypoint is important because it allows us to launch processes at boot. Check the section below for a detailed explanation of the [`jetson_xavier_cerberus.sh`](entrypoints/jetson_xavier_cerberus.sh) example:
+
+<details>
+  <summary> Click for full explanation </summary>
+
 ```sh
 #!/bin/bash
 
@@ -106,7 +136,7 @@ then
     ref=$(echo roscd: No such package/stack \'procman_ros\')
     if [ $out == $ref ]; then
         source ~/.bashrc && source ~/catkin_ws/devel/setup.bash  
-        echo "Warning: procman_ros is not build within the catkin_ws. Therefore the debuty cannot be started!"
+        echo "Warning: procman_ros is not build within the catkin_ws. Therefore the deputy cannot be started!"
     else
         source ~/.bashrc && source ~/catkin_ws/devel/setup.bash  && rosrun procman_ros deputy -i anymal_cerberus_xavier
     fi
@@ -114,46 +144,70 @@ else
     echo "Warning: Catkin_ws does not exist!"
 fi
 ```
-This entrypoint sources the `.bashrc`, `catkin_ws` and automaticially start a `procman debuty` with the correct name set to `anymal_cerberus_xavier` if procman_ros is correctly build within the catkin_ws. Make sure that the entrypoint can be executed otherwise the service can not run and the container will not start.
 
-As a template for the entrypoint you can use the `entrypoints/jetson_xavier_coyote.sh`  
+This entrypoint sources the `.bashrc`, `catkin_ws` and automatically starts a `procman deputy` with the correct name set to `anymal_cerberus_xavier` if `procman_ros` is correctly build within the catkin_ws. Make sure that the entrypoint can be executed otherwise the service can not run and the container will not start.
 
-`Sidenote:` Running the idealing procman debuty inside the container does not take up any resources, therefore it can always run in the background, even when not used.
+> 💡 Running the idealing procman deputy inside the container does not take up any resources, therefore it can always run in the background, even when not used.
+</details>
+</br>
 
-## Installation of the container:
+### Installation of the container
+
 Simply execute:
+
 ```sh
 ./bin/install.sh --name=jetson_xavier_cerberus --target=jetson_xavier --git=$HOME/git --entrypoint=jetson_xavier_cerberus.sh
 ```
 
-Explanation:
-1. The correct docker image is pulled/build.
-2. A background service is added under: `/etc/systemd/system/docker-setup-jetson_xavier_cerberus.service`
-The service is starts automaticially on startup the same container and executes what is defined within the entrypoint. 
-3. The following files will be appended to the `.bashrc`
+The previous script will do as follows:
+
+1. It will pull the image specified by the target. In this case the target is `jetson_xavier`, which is defined in the [targets](targets) folder: [jetson_xavier](targets/jetson_xavier.sh)
+2. A new container will be created under the name `jetson_xavier_cerberus`. This is the name that will be used by the Docker daemon, and it will mount the `$HOME/git` folder under `/root/git` in the container. This container is initialized using the [`scripts/run.sh`](bin/run.sh) script described before.
+3. A background service is added under: `/etc/systemd/system/docker-setup-jetson_xavier_cerberus.service`. This will ensure that the container is launched on startup, and it will execute what is defined within the entrypoint. 
+4. Finally, the installation script also defines some variables and extra files that are sourced in the `bashrc` of the host.
+5. Make sure to source your `.bashrc`
+
+<details>
+  <summary>Click for full explanation</summary>
+
 ```sh
 # == Docker setup ini ==
 export DOCKER_SETUP_ROOT=/home/tutuna/git/docker_setup
 export DOCKER_SETUP_CONTAINER_NAME=jetson_xavier_cerberus
 source $DOCKER_SETUP_ROOT/bin/commands.sh
 export DOCKER_SETUP_SERVICE=docker-setup-jetson_xavier_cerberus
+# == Docker setup end =="
 ```
-Sourcing the commands, setting system variables for the path to the docker_setup repository, container name and background service name.
 
-4. Within the install script the `bin/run.sh` script is called, which directly spins up the container.
-5. You should now when executing `docker ps` see a running container with the name `jetson_xavier_cerberus`
+</details>
+
+</br>
+
+### Post-installation
+
+#### Sanity checks:
+
+After sourcing your `.bashrc`, you can execute some basic tests to confirm that everything works as intended:
+
+1. Run `docker ps` to see a running container with the name `jetson_xavier_cerberus`
 
 ```shell
-tutuna@anymal-cerberus-jetson:~/git/docker_setup$ docker ps
+user@hostname:~/git/docker_setup$ docker ps
 CONTAINER ID   IMAGE                                                           COMMAND                 CREATED      STATUS         PORTS     NAMES
 aece32b86eb5   mmattamala/devel-jetson:ubuntu20.04-noetic-cuda10.2.0-r32.5.0   "/entrypoint.sh bash"   1 min ago   Up 15 months             jetson_xavier_cerberus
 ```
-6. Make sure to source your `.bashrc`
 
-## Setting up your catkin_ws:
-1. You can now use `dsbash` to obtain a bash shell inside the container - this command is defined within `bin/commands.sh`
-2. The git folder is mapped inside the container. You should pull the packages outside of the container given that no ssh keys are mapped inside.
-3. Create the typicial `catkin_ws/src` and set it up as usually:
+2. Run `dsstatus` to check the status of the background service.
+3. Run `dsbash` to start a bash terminal on the background container.
+
+> 💡 Both `dstatus` and `dsbash` are defined in [`bin/commands.sh`](`bin/commands.sh`), which is sourced in your `bashrc`.
+
+#### Setting up your catkin_ws:
+
+1. Outside the container: clone in the `$HOME/git` folder all the repos/packages ou need. They will be automatically mounted to the container.
+2. Open a new terminal on the container with `dsbash`
+3. Set up the catkin workspace as usual. Here we show an example with `procman_ros`:
+
 ```sh
 mkdir -p ~/catkin_ws/src/
 source /opt/ros/noetic/setup.bash
@@ -161,23 +215,48 @@ cd ~/catkin_ws/
 catkin init
 catkin config --extend /opt/ros/noetic
 catkin config --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo
-ln -s /root/git/anymal_rsl /root/catkin_ws/src/
-ln -s /root/git/catkin_simple /root/catkin_ws/src/
-ln -s /root/git/elevation_mapping_cupy /root/catkin_ws/src/
-ln -s /root/git/glog_catkin /root/catkin_ws/src/
+
 ln -s /root/git/procman_ros /root/catkin_ws/src/
-ln -s /root/git/pybind11_catkin /root/catkin_ws/src/
-ln -s /root/git/raw_image_pipeline /root/catkin_ws/src/
-ln -s /root/git/grid_map /root/catkin_ws/src/
+
 cd $HOME/catkin_ws
 catkin build procman_ros
-catkin build anymal_c_rsl_jetson
 ```
-4. Having the catkin_ws not mapped inside the container avoids permission issues between the host user and container defined user. 
-5. Now log out of the container using `exit` and restart the container `docker restart jetson_xavier_cerberus` - This will restart the container and ensure that procman is loaded with the correct packages available within the catkin_ws.
 
-## Now we are ready to run the your code
-### Classicial way:
+4. Now log out of the container using `exit` or _Ctrl+D_ and restart the container `docker restart jetson_xavier_cerberus`. This will ensure that the procman deputy is loaded with the correct packages available within the `catkin_ws`.
+
+> 💡 By defining `catkin_ws` inside the container we avoid conflicts between the host user and container's `root` user.
+
+#### Running code:
+
+<details>
+  <summary> Launching code within the container </summary>
+
+  The simplest way is just running:
+
+  ```sh
+  dsbash <your_command>
+  ```
+
+  `dsbash` should pass your command to the container to execut it.
+
+  Otherwise, you can init a terminal on the container:
+  
+  ```sh
+  dsbash
+  ```
+
+  And then run your command as usual:
+
+  ```sh
+  <your_command>
+  ```
+
+</details>
+
+</br>
+
+<details>
+  <summary> Launching code on the robot </summary>
 1. Ssh into the jetson
 ```sh
 ssh anymal-cerberus-jetson
@@ -194,11 +273,18 @@ dsbash
 ```sh
 rosrun anymal_rsl jetson.py
 ```
-5. Done
+</details>
 
-### Procman: 
+</br>
+
+<details>
+  <summary> Launching code with procman (work in progress) </summary>
+
+> ⚠️ This is not fully documented yet
+
 1. Define on OPC a procman configuration `~/procman.pmd` containing the following:
-```
+
+```sh
 group "0.basic" {
     cmd "0.5.jetson MAN" {
         exec = "rosrun anymal_c_rsl jetson.py";
@@ -206,31 +292,41 @@ group "0.basic" {
     }
 }
 ```
+
 We recommend to add an alias to the OPC `.bashrc` to easily access procman:
+
 ```sh
 alias procman="rosrun procman_ros sheriff -l $HOME/procman.pmd"
 ```
+
 Start procman (don not forget to source your `.bashrc` before):
+
 ```sh
 procman
 ```
 
+> ⚠️ If you change things in `catkin_ws` and you want to start them via the procman, remember to restart the container such that `catkin_ws` is sourced when procman restarts.
 
-## Changing the content of the catkin_ws
-Make sure when changing things inside the `catkin_ws` and you want to start them via the procman to restart the container such that procman is restarted and the catkin_ws newly sourced. 
+</details>
+
+</br>
 
 ## Troubleshooting
-Just writing down some annoying problems I found and how to fix them
+
+Just writing down some we have found working with Docker in different platforms and how to fix them.
 
 ### To avoid using sudo
+
 Add your user to the Docker group
 
 Create the docker group if it does not exist
+
 ```sh
 sudo groupadd docker
  ```
 
 Add your user to the docker group.
+
 ```sh
 sudo usermod -aG docker $USER
 ```
@@ -244,6 +340,7 @@ sudo service docker stop
 ```
 
 Open the docker daemon file
+
 ```sh
 sudo nano /etc/docker/daemon.json
 ```
@@ -263,11 +360,13 @@ Add the `default-runtime` entry to the `daemon.json` file and save:
 ```
 
 Start the daemon again
+
 ```sh
 sudo service docker restart
 ```
 
 ### Change default directory for docker images
+
 The images are stored in `/var/lib/docker` by default. To change it, modify the same `daemon.json` file to add the `data-root` entry:
 
 ```json
@@ -286,9 +385,11 @@ The images are stored in `/var/lib/docker` by default. To change it, modify the 
 If you need more information when doing this on a Jetson, check this [link](https://forums.developer.nvidia.com/t/change-docker-image-storage-location-to-nvme-ssd/156882/2) from the NVidia forums.
 
 ### If you get `unknown flag: --build-arg` when building images
+
 You are missing [Docker buildx](https://github.com/docker/buildx#linux-packages). Follow the instructions so set it up in your system.
 
 ### Mount extra devices when running the container (e.g cameras)
+
 You can use the `--flags` parameter. For example, to load a camera with descriptor `/dev/video2` as `video0` in the container:
 
 ```sh

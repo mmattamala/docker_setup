@@ -15,7 +15,7 @@ then
     ref=$(echo roscd: No such package/stack \'procman_ros\')
     if [ $out == $ref ]; then
         source ~/.bashrc && source ~/catkin_ws/devel/setup.bash  
-        echo "Warning: procman_ros is not build within the catkin_ws. Therefore the debuty cannot be started!"
+        echo "Warning: procman_ros is not build within the catkin_ws. Therefore the deputy cannot be started!"
     else
         source ~/.bashrc && source ~/catkin_ws/devel/setup.bash  && rosrun procman_ros deputy -i anymal_cerberus_xavier
     fi
