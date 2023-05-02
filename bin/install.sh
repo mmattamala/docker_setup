@@ -104,7 +104,7 @@ if [[ ${UNINSTALL_FLAG} != "true" ]]; then
                             --git=$GIT_DIR \
                             --entrypoint=$ENTRYPOINT_FILE \
                             --no-rm \
-                            --flags="--name=${DOCKER_SETUP_CONTAINER_NAME} -d" > /dev/null
+                            --flags="--name=${DOCKER_SETUP_CONTAINER_NAME} -d ${EXTRA_FLAGS}" > /dev/null
     fi
 
     # Install service
