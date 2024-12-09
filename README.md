@@ -1,5 +1,10 @@
 # docker_setup
 
+> ⚠️ I do not recomment this package for deployment. It was a testbench to learn docker concepts, specially when integrated with NVidia devices.
+> In its current state, this repo is only a good reference on tricks and configurations to make stuff work.
+> If you need to create a docker image for your application, I instead recommend the [`docker-for-robotics`](https://github.com/2b-t/docker-for-robotics/) repository
+
+
 Personal package to work with Docker with all the tools and packages I use: ROS, OpenCV with CUDA support, PyTorch.
 It allows to:
 
